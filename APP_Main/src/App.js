@@ -1,14 +1,8 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import logo from './zenarth.png';
-import MainWebsite from './pages/site/MainWebsite';
-import Dashboard from './pages/app/Dashboard';
-import HomePage from './pages/HomePage';
-import CompanyPage from './pages/CompanyPage';
-import FriendsPage from './pages/FriendsPage';
-import PrivacyPage from './pages/PrivacyPage';
-import AccountPage from './pages/AccountPage';
-import DefaultPage from './pages/DefaultPage';
+import MainWebsite from './01_controllers_daemons/sites_controllers/MainWebsite';
+import Dashboard from './01_controllers_daemons/dashboards_controllers/Dashboard';
 
 function App() 
 {
@@ -63,31 +57,8 @@ function App()
   };
 
   const getPageContent = () => {
-    if (activeSection === 'home') {
-      return <HomePage />;
-    }
-    
-    if (activeSection === 'people') {
-      if (activeSubSection === 'Company') {
-        return <CompanyPage />;
-      }
-      
-      if (activeSubSection === 'Friends') {
-        return <FriendsPage />;
-      }
-    }
-    
-    if (activeSection === 'settings') {
-      if (activeSubSection === 'Privacy') {
-        return <PrivacyPage />;
-      }
-      
-      if (activeSubSection === 'Account') {
-        return <AccountPage />;
-      }
-    }
-    
-    return <DefaultPage pageTitle={getPageTitle()} />;
+    // Since we removed navbar pages, just return a simple message
+    return <div>Page content will be handled by MainWebsite component</div>;
   };
 
   // Show main website or dashboard based on current view

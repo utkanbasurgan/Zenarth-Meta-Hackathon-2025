@@ -125,7 +125,7 @@
         {
           background: #2a2d3a;
           color: white;
-          border-left-color: #3898a4;
+          border-left-color: #2d2bac;
         }
 
         .nav-item i 
@@ -148,7 +148,7 @@
           font-size: 12px;
           font-weight: 700;
           text-transform: uppercase;
-          color: #3898a4;
+          color: #2d2bac;
           letter-spacing: 0.5px;
         }
 
@@ -177,7 +177,7 @@
         {
           background: #2a2d3a;
           color: white;
-          border-left-color: #3898a4;
+          border-left-color: #2d2bac;
         }
 
         .main-content 
@@ -285,7 +285,7 @@
 
         .contact-item i 
         {
-          color: #3898a4;
+          color: #2d2bac;
           font-size: 20px;
         }
 
