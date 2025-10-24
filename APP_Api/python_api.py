@@ -1,5 +1,6 @@
 # filename: ssh_exec.py
 import paramiko
+import json
 from pathlib import Path
 
 
@@ -61,41 +62,59 @@ def run_remote(
     Dönen: (exit_status:int, stdout:str, stderr:str)
     """
     stdin, stdout, stderr = client.exec_command(command, get_pty=pty, timeout=timeout)
-    # Tüm çıktıyı oku
     out = stdout.read().decode(errors="ignore")
     err = stderr.read().decode(errors="ignore")
     exit_status = stdout.channel.recv_exit_status()
     return exit_status, out, err
 
 
-# -----------------------------
-# Örnek kullanım
-# -----------------------------
-if __name__ == "__main__":
-    HOST = "83.104.230.246"
-    PORT = 31103
-    USER = "root"
+def send_prompt(
+    client: paramiko.SSHClient,
+    prompt: str,
+    model: str = "llama3.1:8b",
+    api_url: str = "http://127.0.0.1:11434/api/generate",
+    options: dict | None = None,
+    timeout: int = 180,
+) -> dict:
+    """
+    Uzak sunucudaki Ollama HTTP API'ye prompt gönderir, streaming JSON'u birleştirerek düz metin yanıt döndürür.
+    Dönen: {"ok": bool, "text": str, "raw": str, "stderr": str}
+    """
+    payload = {
+        "model": model,
+        "prompt": prompt,
+    }
+    if options:
+        payload["options"] = (
+            options  # örn: {"temperature": 0.2, "top_p": 0.9, "num_predict": 256}
+        )
 
-    # DİKKAT: gerçek dosya yollarını yaz
-    KEY_PATH = "./APP_Api/llama_ssh.txt"
-    PASSFILE_PATH = "./App_api/passphrase.txt"
+    # curl ile POST; -s = silent. Ollama satır satır JSON üretir (stream).
+    # json.dumps içinde tekrar json.dumps(payload) yapmıyoruz; shell tarafında tek tırnak kaçmasını önlemek için repr benzeri kullanıyoruz.
+    data_literal = json.dumps(payload, ensure_ascii=False)
+    cmd = (
+        "curl -s -X POST "
+        f"{api_url} "
+        "-H 'Content-Type: application/json' "
+        f"-d {json.dumps(data_literal)}"
+    )
 
-    # 1) bağlan
-    ssh = connect_ssh(HOST, PORT, USER, KEY_PATH, PASSFILE_PATH)
+    _, out, err = run_remote(client, cmd, timeout=timeout)
 
-    try:
-        # 2) istediğin komutu çalıştır: örnek—ollama ile llama3 prompt’u
-        prompt = "Merhaba Llama 3, tek cümlede cevap ver."
-        # heredoc ile güvenli prompt aktarımı (özel karakter derdin kalmaz)
-        cmd = f"echo Hello World"
+    # Streaming JSON her satırı parse edip 'response' alanlarını birleştir
+    pieces = []
+    for line in out.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+            if "response" in obj:
+                pieces.append(obj["response"])
+        except Exception:
+            # parse edilemeyen satır varsa raw içinde kalır, text'e ekleme.
+            pass
 
-        code, out, err = run_remote(ssh, cmd, timeout=180)
+    text = "".join(pieces).strip() if pieces else out.strip()
+    return {"ok": bool(text), "text": text, "raw": out, "stderr": err}
 
-        print("exit_status:", code)
-        print("stdout:\n", out)
-        print("stderr:\n", err)
-
-        cmd = f"ollama run llama3.1:8b"
-
-    finally:
-        ssh.close()
