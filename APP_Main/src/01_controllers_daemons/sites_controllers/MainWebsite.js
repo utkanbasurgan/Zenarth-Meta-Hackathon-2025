@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
+import logo from '../../zenarth.png';
 
 const MainWebsite = ({ onNavigateToDashboard }) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -42,8 +43,10 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         <nav className="navbar">
           <div className="navbar-container">
             <div className="navbar-brand">
-              <img src="/daemons/zenarth.png" alt="Zenarth" className="logo" />
-              <span className="brand-name">Zenarth</span>
+              <img src={logo} alt="Zenarth" className="logo" />
+              <span className="brand-name">
+                <span className="zenarth-bold">Zenarth</span> <span className="ai-italic">AI</span>
+              </span>
             </div>
             
             
@@ -66,7 +69,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
             <div className="hero-content">
               <h1 className="hero-title">Zenarth'a Hoş Geldiniz</h1>
               <p className="hero-subtitle">
-                Modern ve güvenilir çözümlerle işinizi bir üst seviyeye taşıyın
+                Modern ve güvenilir çözümlerle işinizi bir üst seviyeye taşıyın.
               </p>
               <div className="hero-buttons">
                 <button className="btn-primary" onClick={handleRegisterClick}>
@@ -99,7 +102,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         }
 
         .navbar {
-          background: linear-gradient(135deg, #2d2bac 0%, #1a1a7a 100%);
+          background: linear-gradient(135deg, #1f1e7a 0%, #0f0e5a 100%);
           color: white;
           padding: 1rem 0;
           box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -136,6 +139,15 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
           font-weight: bold;
         }
 
+        .zenarth-bold {
+          font-weight: bold;
+        }
+
+        .ai-italic {
+          font-style: italic;
+          font-weight: 500;
+        }
+
 
         .navbar-auth {
           display: flex;
@@ -162,12 +174,12 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
 
         .btn-login:hover {
           background-color: white;
-          color: #2d2bac;
+          color: #1f1e7a;
         }
 
         .btn-register {
           background-color: white;
-          color: #2d2bac;
+          color: #1f1e7a;
         }
 
         .btn-register:hover {
@@ -177,15 +189,17 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         .main-body {
           flex: 1;
           background-color: #f8f9fa;
+          min-height: calc(100vh - 80px);
         }
 
         .hero-section {
-          background: linear-gradient(135deg, #2d2bac 0%, #1a1a7a 100%);
+          background: linear-gradient(135deg, #1f1e7a 0%, #0f0e5a 100%);
           color: white;
           padding: 4rem 2rem;
           display: flex;
           align-items: center;
-          min-height: 70vh;
+          min-height: calc(100vh - 80px);
+          height: calc(100vh - 80px);
         }
 
         .hero-content {
@@ -225,7 +239,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
 
         .btn-primary {
           background-color: white;
-          color: #2d2bac;
+          color: #1f1e7a;
         }
 
         .btn-primary:hover {
@@ -240,7 +254,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
 
         .btn-secondary:hover {
           background-color: white;
-          color: #2d2bac;
+          color: #1f1e7a;
         }
 
         .hero-image {
@@ -295,6 +309,20 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
 
           .hero-title {
             font-size: 2rem;
+          }
+
+          .hero-section {
+            min-height: calc(100vh - 60px);
+            height: calc(100vh - 60px);
+            padding: 2rem 1rem;
+          }
+        }
+
+        @media (max-height: 600px) {
+          .hero-section {
+            min-height: 100vh;
+            height: 100vh;
+            padding: 2rem;
           }
         }
       `}</style>

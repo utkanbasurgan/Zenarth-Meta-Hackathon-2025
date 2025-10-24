@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
-import Sidebar from '../../02_softwares_daemons/components/Sidebar';
-import Topbar from '../../02_softwares_daemons/components/Topbar';
-import OverviewPage from './pages/OverviewPage';
-import ProjectsPage from './pages/ProjectsPage';
-import TasksPage from './pages/TasksPage';
-import TeamPage from './pages/TeamPage';
-import AnalyzePage from './pages/AnalyzePage';
-import SettingsPage from './pages/SettingsPage';
+import { Sidebar, Topbar } from '../../02_softwares_daemons/components';
+import { 
+  OverviewPage, 
+  ProjectsPage, 
+  TasksPage, 
+  TeamPage, 
+  AnalyzePage, 
+  SettingsPage 
+} from './pages';
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [activeSubSection, setActiveSubSection] = useState('stats');
   const [user, setUser] = useState({
-    name: 'User',
+    name: 'Kullanıcı',
     email: 'user@example.com',
     avatar: null
   });
@@ -34,17 +35,17 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [aiResponse, setAiResponse] = useState('');
 
   const stats = [
-    { title: 'Total Projects', value: '12', icon: 'fas fa-folder', color: '#1f1e7a' },
-    { title: 'Active Tasks', value: '8', icon: 'fas fa-tasks', color: '#f093fb' },
-    { title: 'Completed', value: '24', icon: 'fas fa-check-circle', color: '#4facfe' },
-    { title: 'Pending', value: '3', icon: 'fas fa-clock', color: '#43e97b' }
+    { title: 'Toplam Projeler', value: '12', icon: 'fas fa-folder', color: '#1f1e7a' },
+    { title: 'Aktif Görevler', value: '8', icon: 'fas fa-tasks', color: '#f093fb' },
+    { title: 'Tamamlanan', value: '24', icon: 'fas fa-check-circle', color: '#4facfe' },
+    { title: 'Bekleyen', value: '3', icon: 'fas fa-clock', color: '#43e97b' }
   ];
 
   const recentActivities = [
-    { id: 1, action: 'New project created', project: 'Website Redesign', time: '2 hours ago' },
-    { id: 2, action: 'Task completed', project: 'Mobile App', time: '4 hours ago' },
-    { id: 3, action: 'File uploaded', project: 'Dashboard UI', time: '6 hours ago' },
-    { id: 4, action: 'Comment added', project: 'API Integration', time: '1 day ago' }
+    { id: 1, action: 'Yeni proje oluşturuldu', project: 'Website Redesign', time: '2 saat önce' },
+    { id: 2, action: 'Görev tamamlandı', project: 'Mobile App', time: '4 saat önce' },
+    { id: 3, action: 'Dosya yüklendi', project: 'Dashboard UI', time: '6 saat önce' },
+    { id: 4, action: 'Yorum eklendi', project: 'API Integration', time: '1 gün önce' }
   ];
 
   const projects = [
@@ -57,36 +58,36 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // Sub-sections for each main section
   const subSections = {
     overview: [
-      { id: 'stats', name: 'Statistics', icon: 'fas fa-chart-bar' },
-      { id: 'charts', name: 'Charts', icon: 'fas fa-chart-line' },
-      { id: 'activities', name: 'Activities', icon: 'fas fa-history' }
+      { id: 'stats', name: 'İstatistikler', icon: 'fas fa-chart-bar' },
+      { id: 'charts', name: 'Grafikler', icon: 'fas fa-chart-line' },
+      { id: 'activities', name: 'Aktiviteler', icon: 'fas fa-history' }
     ],
     projects: [
-      { id: 'all', name: 'All Projects', icon: 'fas fa-folder' },
-      { id: 'active', name: 'Active Projects', icon: 'fas fa-play' },
-      { id: 'completed', name: 'Completed', icon: 'fas fa-check' },
-      { id: 'archived', name: 'Archived', icon: 'fas fa-archive' }
+      { id: 'all', name: 'Tüm Projeler', icon: 'fas fa-folder' },
+      { id: 'active', name: 'Aktif Projeler', icon: 'fas fa-play' },
+      { id: 'completed', name: 'Tamamlanan', icon: 'fas fa-check' },
+      { id: 'archived', name: 'Arşivlenen', icon: 'fas fa-archive' }
     ],
     tasks: [
-      { id: 'my-tasks', name: 'My Tasks', icon: 'fas fa-tasks' },
-      { id: 'assigned', name: 'Assigned', icon: 'fas fa-user-plus' },
-      { id: 'completed', name: 'Completed', icon: 'fas fa-check-circle' },
-      { id: 'overdue', name: 'Overdue', icon: 'fas fa-exclamation-triangle' }
+      { id: 'my-tasks', name: 'Görevlerim', icon: 'fas fa-tasks' },
+      { id: 'assigned', name: 'Atanan', icon: 'fas fa-user-plus' },
+      { id: 'completed', name: 'Tamamlanan', icon: 'fas fa-check-circle' },
+      { id: 'overdue', name: 'Geciken', icon: 'fas fa-exclamation-triangle' }
     ],
     team: [
-      { id: 'members', name: 'Members', icon: 'fas fa-users' },
-      { id: 'roles', name: 'Roles', icon: 'fas fa-user-tag' },
-      { id: 'permissions', name: 'Permissions', icon: 'fas fa-shield-alt' }
+      { id: 'members', name: 'Üyeler', icon: 'fas fa-users' },
+      { id: 'roles', name: 'Roller', icon: 'fas fa-user-tag' },
+      { id: 'permissions', name: 'İzinler', icon: 'fas fa-shield-alt' }
     ],
     analyze: [
-      { id: 'data-upload', name: 'Upload Data', icon: 'fas fa-upload' },
-      { id: 'ai-analysis', name: 'AI Analysis', icon: 'fas fa-robot' },
-      { id: 'reports', name: 'Reports', icon: 'fas fa-file-alt' }
+      { id: 'data-upload', name: 'Veri Yükle', icon: 'fas fa-upload' },
+      { id: 'ai-analysis', name: 'AI Analiz', icon: 'fas fa-robot' },
+      { id: 'reports', name: 'Raporlar', icon: 'fas fa-file-alt' }
     ],
     settings: [
-      { id: 'profile', name: 'Profile', icon: 'fas fa-user' },
-      { id: 'preferences', name: 'Preferences', icon: 'fas fa-cog' },
-      { id: 'security', name: 'Security', icon: 'fas fa-lock' }
+      { id: 'profile', name: 'Profil', icon: 'fas fa-user' },
+      { id: 'preferences', name: 'Tercihler', icon: 'fas fa-cog' },
+      { id: 'security', name: 'Güvenlik', icon: 'fas fa-lock' }
     ]
   };
 
@@ -101,10 +102,10 @@ const Dashboard = ({ onNavigateToWebsite }) => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'active': return 'Active';
-      case 'review': return 'Review';
-      case 'pending': return 'Pending';
-      default: return 'Unknown';
+      case 'active': return 'Aktif';
+      case 'review': return 'İnceleme';
+      case 'pending': return 'Bekliyor';
+      default: return 'Bilinmiyor';
     }
   };
 
@@ -152,7 +153,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const generateQuickActions = async (headers, data) => {
     setIsGeneratingActions(true);
     try {
-      const prompt = `This CSV data has ${headers.length} columns and ${data.length} rows. Columns: ${headers.join(', ')}. Suggest 5 useful quick actions for this data. For each action provide label, icon (FontAwesome), and description. Respond in JSON format.`;
+      const prompt = `Bu CSV verisi için ${headers.length} sütun ve ${data.length} satır var. Sütunlar: ${headers.join(', ')}. Bu veri için 5 adet kullanışlı hızlı işlem öner. Her işlem için label, icon (FontAwesome), ve description ver. JSON formatında yanıtla.`;
       
       const response = await geminiApi(prompt);
       const actions = JSON.parse(response);
@@ -192,14 +193,14 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     setAiError('');
     
     try {
-      const prompt = `CSV data analysis: ${headers.join(', ')} columns. ${csvData.length} rows of data. User asks: "${aiSearchQuery}". Filter the data according to this question and return results. Return only matching rows as JSON array.`;
+      const prompt = `CSV verisi analizi: ${headers.join(', ')} sütunları var. ${csvData.length} satır veri. Kullanıcı soruyor: "${aiSearchQuery}". Bu soruya göre veriyi filtrele ve sonuçları döndür. Sadece eşleşen satırları JSON array olarak ver.`;
       
       const response = await geminiApi(prompt);
       const filtered = JSON.parse(response);
       setFilteredData(filtered);
     } catch (error) {
       console.error('AI search failed:', error);
-      setAiError('AI search failed. Please try again.');
+      setAiError('AI arama başarısız oldu. Lütfen tekrar deneyin.');
     } finally {
       setIsAiLoading(false);
     }
@@ -213,7 +214,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       setAiResponse(response);
     } catch (error) {
       console.error('General AI search failed:', error);
-      setAiResponse('Could not get AI response. Please try again.');
+      setAiResponse('AI yanıtı alınamadı. Lütfen tekrar deneyin.');
     }
   };
 
@@ -312,7 +313,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           <i className="fas fa-magic"></i>
           <input 
             type="text" 
-            placeholder="Ask AI anything..." 
+            placeholder="AI ile herhangi bir şey sorun..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={(e) => {
@@ -324,7 +325,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           <button 
             className="ai-search-btn"
             onClick={handleGeneralAiSearch}
-            title="Search with AI"
+            title="AI ile ara"
           >
             <i className="fas fa-robot"></i>
           </button>
@@ -366,15 +367,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           font-size: 1.5rem;
           font-weight: 700;
           color: #333;
-        }
-
-        .zenarth-bold {
-          font-weight: bold;
-        }
-
-        .ai-italic {
-          font-style: italic;
-          font-weight: 500;
         }
 
         .sidebar-nav {

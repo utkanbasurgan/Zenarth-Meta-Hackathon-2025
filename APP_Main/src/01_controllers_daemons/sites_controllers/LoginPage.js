@@ -183,7 +183,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
 
         .form-group input:focus {
           outline: none;
-          border-color: #667eea;
+          border-color: #1f1e7a;
         }
 
         .form-options {
@@ -205,7 +205,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .forgot-password {
-          color: #667eea;
+          color: #1f1e7a;
           text-decoration: none;
           transition: color 0.3s;
         }
@@ -215,7 +215,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .login-btn {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #1f1e7a 0%, #1f1e7a 100%);
           color: white;
           border: none;
           padding: 1rem;
@@ -247,7 +247,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .register-link {
-          color: #667eea;
+          color: #1f1e7a;
           text-decoration: none;
           font-weight: 600;
           transition: color 0.3s;
