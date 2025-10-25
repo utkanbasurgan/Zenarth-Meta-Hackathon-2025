@@ -111,7 +111,6 @@
           border: none;
           color: #8b8d98;
           cursor: pointer;
-          transition: all 0.3s ease;
           font-size: 15px;
           text-align: left;
           border-left: 3px solid transparent;
@@ -121,7 +120,6 @@
         {
           background: rgba(31, 30, 122, 0.1);
           color: #1f1e7a;
-          transform: translateX(2px);
         }
 
         .nav-item.active 

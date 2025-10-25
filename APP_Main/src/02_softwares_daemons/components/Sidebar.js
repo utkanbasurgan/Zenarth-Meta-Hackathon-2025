@@ -40,18 +40,7 @@ const Sidebar = ({
             }}
           >
             <i className="fas fa-folder"></i>
-            <span>Projects</span>
-          </button>
-          
-          <button 
-            className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('settings');
-              setActiveSubSection(subSections.settings?.[0]?.id || '');
-            }}
-          >
-            <i className="fas fa-cog"></i>
-            <span>Settings</span>
+            <span>Sources</span>
           </button>
           
           <button 
@@ -63,6 +52,28 @@ const Sidebar = ({
           >
             <i className="fas fa-terminal"></i>
             <span>Console</span>
+          </button>
+          
+          <button 
+            className={`nav-item ${activeSection === 'people' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSection('people');
+              setActiveSubSection(subSections.people?.[0]?.id || '');
+            }}
+          >
+            <i className="fas fa-users"></i>
+            <span>People</span>
+          </button>
+          
+          <button 
+            className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSection('settings');
+              setActiveSubSection(subSections.settings?.[0]?.id || '');
+            }}
+          >
+            <i className="fas fa-cog"></i>
+            <span>Settings</span>
           </button>
         </nav>
         

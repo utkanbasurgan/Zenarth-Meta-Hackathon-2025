@@ -3,12 +3,9 @@ import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
 import Sidebar from '../../02_softwares_daemons/components/Sidebar';
 import Topbar from '../../02_softwares_daemons/components/Topbar';
 import {
-  OverviewPage,
   OverviewStatistics,
-  OverviewChart,
-  OverviewActivities,
-  AnalyzePage,
-  ChatPage
+  ChatPage,
+  DetailPage
 } from './Overview';
 
 import {
@@ -19,7 +16,8 @@ import {
   Project6,
   ProjectsSubPage1,
   TasksPage,
-  TeamPage
+  TeamPage,
+  AdminsPage
 } from './Projects';
 
 import {
@@ -32,7 +30,7 @@ import {
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');
-  const [activeSubSection, setActiveSubSection] = useState('stats');
+  const [activeSubSection, setActiveSubSection] = useState('details');
   const [user, setUser] = useState({
     name: 'User',
     email: 'user@zenarth.ai',
@@ -119,19 +117,24 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // Sub-sections for each main section
   const subSections = {
     overview: [
+      { id: 'details', name: 'Details', icon: 'fas fa-info-circle' },
       { id: 'stats', name: 'Statistics', icon: 'fas fa-chart-bar' },
       { id: 'charts', name: 'Charts', icon: 'fas fa-chart-line' },
       { id: 'activities', name: 'Activities', icon: 'fas fa-history' },
       { id: 'chat', name: 'Chat', icon: 'fas fa-comments' }
     ],
     projects: generateProjectsSubSections(),
+    console: [
+      { id: 'connect', name: 'Agents', icon: 'fas fa-terminal' }
+    ],
+    people: [
+      { id: 'admins', name: 'Admins', icon: 'fas fa-user-shield' },
+      { id: 'team', name: 'Team', icon: 'fas fa-users' }
+    ],
     settings: [
       { id: 'profile', name: 'Profile', icon: 'fas fa-user' },
       { id: 'preferences', name: 'Preferences', icon: 'fas fa-cog' },
       { id: 'security', name: 'Security', icon: 'fas fa-lock' }
-    ],
-    console: [
-      { id: 'connect', name: 'Connect Console', icon: 'fas fa-terminal' }
     ]
   };
 
@@ -271,16 +274,14 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       case 'overview':
         // Handle overview subpages
         switch (activeSubSection) {
+          case 'details':
+            return <DetailPage />;
           case 'stats':
             return <OverviewStatistics />;
-          case 'charts':
-            return <OverviewChart />;
-          case 'activities':
-            return <OverviewActivities />;
           case 'chat':
             return <ChatPage />;
           default:
-            return <OverviewPage stats={stats} recentActivities={recentActivities} />;
+            return <DetailPage />;
         }
       case 'projects':
         // Handle projects subpages
@@ -322,27 +323,237 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         switch (activeSubSection) {
           case 'connect':
             return <div className="console-section">
-              <h2>Connect Console</h2>
-              <div className="console-content">
-                <p>Console connection interface will be implemented here.</p>
-                <div className="console-terminal">
-                  <pre>Welcome to Zenarth Console</pre>
+              <div className="console-header">
+                <div className="console-title">
+                  <i className="fas fa-terminal"></i>
+                  <h2>Agents Console</h2>
+                </div>
+                <div className="console-status">
+                  <div className="status-indicator online">
+                    <div className="status-dot"></div>
+                    <span>Connected</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="console-grid">
+                <div className="console-main">
+                  <div className="terminal-window">
+                    <div className="terminal-header">
+                      <div className="terminal-controls">
+                        <div className="control-btn close"></div>
+                        <div className="control-btn minimize"></div>
+                        <div className="control-btn maximize"></div>
+                      </div>
+                      <div className="terminal-title">Zenarth Console</div>
+                    </div>
+                    <div className="terminal-body">
+                      <div className="terminal-content">
+                        <div className="terminal-line">
+                          <span className="prompt">user@zenarth.ai</span>
+                          <span className="separator">:</span>
+                          <span className="path">~/console</span>
+                          <span className="separator">$</span>
+                          <span className="command">welcome</span>
+                        </div>
+                        <div className="terminal-output">
+                          <div className="output-line">Welcome to Zenarth Console</div>
+                          <div className="output-line">Console connection interface will be implemented here.</div>
+                          <div className="output-line">Type 'help' for available commands</div>
+                        </div>
+                        <div className="terminal-line current">
+                          <span className="prompt">user@zenarth.ai</span>
+                          <span className="separator">:</span>
+                          <span className="path">~/console</span>
+                          <span className="separator">$</span>
+                          <span className="cursor">_</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="console-sidebar">
+                  <div className="agents-panel">
+                    <h3>Available Agents</h3>
+                    <div className="agents-list">
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-robot"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">AI Assistant</div>
+                          <div className="agent-status online">Online</div>
+                        </div>
+                      </div>
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-code"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">Code Analyzer</div>
+                          <div className="agent-status online">Online</div>
+                        </div>
+                      </div>
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-database"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">Data Processor</div>
+                          <div className="agent-status offline">Offline</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <div className="actions-list">
+                      <button className="action-btn">
+                        <i className="fas fa-play"></i>
+                        <span>Start Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-stop"></i>
+                        <span>Stop Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-history"></i>
+                        <span>View History</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-cog"></i>
+                        <span>Settings</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>;
           default:
             return <div className="console-section">
-              <h2>Connect Console</h2>
-              <div className="console-content">
-                <p>Console connection interface will be implemented here.</p>
-                <div className="console-terminal">
-                  <pre>Welcome to Zenarth Console</pre>
+              <div className="console-header">
+                <div className="console-title">
+                  <i className="fas fa-terminal"></i>
+                  <h2>Agents Console</h2>
+                </div>
+                <div className="console-status">
+                  <div className="status-indicator online">
+                    <div className="status-dot"></div>
+                    <span>Connected</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="console-grid">
+                <div className="console-main">
+                  <div className="terminal-window">
+                    <div className="terminal-header">
+                      <div className="terminal-controls">
+                        <div className="control-btn close"></div>
+                        <div className="control-btn minimize"></div>
+                        <div className="control-btn maximize"></div>
+                      </div>
+                      <div className="terminal-title">Zenarth Console</div>
+                    </div>
+                    <div className="terminal-body">
+                      <div className="terminal-content">
+                        <div className="terminal-line">
+                          <span className="prompt">user@zenarth.ai</span>
+                          <span className="separator">:</span>
+                          <span className="path">~/console</span>
+                          <span className="separator">$</span>
+                          <span className="command">welcome</span>
+                        </div>
+                        <div className="terminal-output">
+                          <div className="output-line">Welcome to Zenarth Console</div>
+                          <div className="output-line">Console connection interface will be implemented here.</div>
+                          <div className="output-line">Type 'help' for available commands</div>
+                        </div>
+                        <div className="terminal-line current">
+                          <span className="prompt">user@zenarth.ai</span>
+                          <span className="separator">:</span>
+                          <span className="path">~/console</span>
+                          <span className="separator">$</span>
+                          <span className="cursor">_</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="console-sidebar">
+                  <div className="agents-panel">
+                    <h3>Available Agents</h3>
+                    <div className="agents-list">
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-robot"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">AI Assistant</div>
+                          <div className="agent-status online">Online</div>
+                        </div>
+                      </div>
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-code"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">Code Analyzer</div>
+                          <div className="agent-status online">Online</div>
+                        </div>
+                      </div>
+                      <div className="agent-item">
+                        <div className="agent-icon">
+                          <i className="fas fa-database"></i>
+                        </div>
+                        <div className="agent-info">
+                          <div className="agent-name">Data Processor</div>
+                          <div className="agent-status offline">Offline</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <div className="actions-list">
+                      <button className="action-btn">
+                        <i className="fas fa-play"></i>
+                        <span>Start Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-stop"></i>
+                        <span>Stop Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-history"></i>
+                        <span>View History</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-cog"></i>
+                        <span>Settings</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>;
         }
+      case 'people':
+        // Handle people subpages
+        switch (activeSubSection) {
+          case 'admins':
+            return <AdminsPage />;
+          case 'team':
+            return <TeamPage />;
+          default:
+            return <AdminsPage />;
+        }
       default:
-        return <OverviewPage stats={stats} recentActivities={recentActivities} />;
+        return <DetailPage />;
     }
   };
 
@@ -444,6 +655,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(10px);
           border-right: 1px solid rgba(255, 255, 255, 0.2);
+          border-left: 0.75rem solid #1f1e7a;
           display: flex;
           flex-direction: column;
           box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
@@ -519,6 +731,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           text-align: left;
           display: flex;
           align-items: center;
+          justify-content: flex-start;
           gap: 0.75rem;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -1336,6 +1549,331 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           font-size: 0.9rem;
         }
 
+        /* Console Styles */
+        .console-section {
+          padding: 0;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background: #f8fafc;
+        }
+
+        .console-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem 2rem;
+          background: white;
+          border-bottom: 1px solid #e2e8f0;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .console-title {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .console-title i {
+          font-size: 1.5rem;
+          color: #1f1e7a;
+        }
+
+        .console-title h2 {
+          margin: 0;
+          color: #1f1e7a;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .console-status {
+          display: flex;
+          align-items: center;
+        }
+
+        .status-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+
+        .status-indicator.online {
+          background: #dcfce7;
+          color: #166534;
+        }
+
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #22c55e;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        .console-grid {
+          flex: 1;
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: 1.5rem;
+          padding: 1.5rem 2rem;
+          overflow: hidden;
+        }
+
+        .console-main {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .terminal-window {
+          flex: 1;
+          background: #1e1e1e;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          display: flex;
+          flex-direction: column;
+        }
+
+        .terminal-header {
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          background: #2d2d2d;
+          border-bottom: 1px solid #3d3d3d;
+        }
+
+        .terminal-controls {
+          display: flex;
+          gap: 0.5rem;
+          margin-right: 1rem;
+        }
+
+        .control-btn {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+        }
+
+        .control-btn.close {
+          background: #ff5f57;
+        }
+
+        .control-btn.minimize {
+          background: #ffbd2e;
+        }
+
+        .control-btn.maximize {
+          background: #28ca42;
+        }
+
+        .terminal-title {
+          color: #fff;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .terminal-body {
+          flex: 1;
+          padding: 1rem;
+          overflow-y: auto;
+        }
+
+        .terminal-content {
+          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+          font-size: 0.9rem;
+          line-height: 1.5;
+        }
+
+        .terminal-line {
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .prompt {
+          color: #4ade80;
+          font-weight: 600;
+        }
+
+        .separator {
+          color: #94a3b8;
+        }
+
+        .path {
+          color: #3b82f6;
+        }
+
+        .command {
+          color: #fbbf24;
+        }
+
+        .cursor {
+          color: #fff;
+          animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+
+        .terminal-output {
+          margin: 1rem 0;
+        }
+
+        .output-line {
+          color: #d1d5db;
+          margin-bottom: 0.25rem;
+        }
+
+        .console-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .agents-panel, .quick-actions-panel {
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .agents-panel h3, .quick-actions-panel h3 {
+          margin: 0 0 1rem 0;
+          color: #1f1e7a;
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
+
+        .agents-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .agent-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          background: #f8fafc;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .agent-item:hover {
+          background: #f1f5f9;
+          transform: translateY(-1px);
+        }
+
+        .agent-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #1f1e7a, #3b82f6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.1rem;
+        }
+
+        .agent-info {
+          flex: 1;
+        }
+
+        .agent-name {
+          font-weight: 600;
+          color: #1f1e7a;
+          font-size: 0.9rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .agent-status {
+          font-size: 0.8rem;
+          font-weight: 500;
+          padding: 0.25rem 0.5rem;
+          border-radius: 12px;
+          display: inline-block;
+        }
+
+        .agent-status.online {
+          background: #dcfce7;
+          color: #166534;
+        }
+
+        .agent-status.offline {
+          background: #fee2e2;
+          color: #dc2626;
+        }
+
+        .actions-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 1rem;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          color: #1f1e7a;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-align: left;
+        }
+
+        .action-btn:hover {
+          background: #f1f5f9;
+          border-color: #1f1e7a;
+          transform: translateY(-1px);
+        }
+
+        .action-btn i {
+          color: #1f1e7a;
+          font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+          .console-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding: 1rem;
+          }
+          
+          .console-sidebar {
+            order: -1;
+          }
+          
+          .agents-panel, .quick-actions-panel {
+            padding: 1rem;
+          }
+          
+          .terminal-body {
+            padding: 0.75rem;
+          }
+          
+          .terminal-content {
+            font-size: 0.8rem;
+          }
+        }
+
 
         @media (max-width: 992px) {
           .sub-sidebar {
@@ -1346,6 +1884,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         @media (max-width: 768px) {
           .left-sidebar {
             width: 180px;
+            border-left: 0.75rem solid #1f1e7a;
           }
           
           .sub-sidebar {

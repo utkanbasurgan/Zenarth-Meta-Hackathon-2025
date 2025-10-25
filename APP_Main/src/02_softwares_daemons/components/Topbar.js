@@ -16,6 +16,8 @@ const Topbar = ({
           {activeSection === 'tasks' && 'Tasks'}
           {activeSection === 'team' && 'Team'}
           {activeSection === 'analyze' && 'Data Analysis'}
+          {activeSection === 'console' && 'Console'}
+          {activeSection === 'people' && 'People'}
           {activeSection === 'settings' && 'Settings'}
         </h1>
         {activeSubSection && (
