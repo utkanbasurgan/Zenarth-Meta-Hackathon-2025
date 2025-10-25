@@ -1,0 +1,34 @@
+Here is the analysis:
+
+**Root Cause**
+
+* The error occurs when trying to access a property on an object that is `null`.
+* The code attempts to access `someProperty` on `undefinedObject`, which is `null`.
+* This suggests that there might be an issue with data initialization or a stale closure.
+
+**Fix**
+```diff
+  useEffect(() =>
+  {
+    const handleLogging = async () =>
+    {
+      setLogStatus('Loading Secondary page...');
+      
+      try
+      {
+        const undefinedObject = null;
+-       const errorValue = undefinedObject.someProperty.that.does.not.exist;
++       if (undefinedObject && undefinedObject.someProperty) {
++         const errorValue = undefinedObject.someProperty;
++       } else {
++         console.log('someProperty does not exist');
++       }
+        
+        console.log('This will never execute:', errorValue);
+      }
+      ...
+```
+**Notes**
+
+* The code should check if `undefinedObject` and its properties exist before trying to access them.
+* This is a classic case of a stale closure, where the effect function captures the initial value of `undefinedObject`, which is `null`.

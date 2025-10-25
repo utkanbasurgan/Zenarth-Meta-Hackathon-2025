@@ -2,6 +2,7 @@
 import paramiko
 import json
 from pathlib import Path
+import pandas as pd
 
 
 def _read_passphrase(passfile: str | None) -> str | None:
@@ -55,7 +56,7 @@ def connect_ssh(
 
 
 def run_remote(
-    client: paramiko.SSHClient, command: str, timeout: int = 120, pty: bool = True
+    client: paramiko.SSHClient, command: str, timeout: int = 120, pty: bool = False
 ):
     """
     Açık SSH bağlantısı üzerinde verilen komutu çalıştırır.
@@ -74,47 +75,45 @@ def send_prompt(
     model: str = "llama3.1:8b",
     api_url: str = "http://127.0.0.1:11434/api/generate",
     options: dict | None = None,
-    timeout: int = 180,
+    timeout: int = 600,
+    system: str | None = None,  # ✅ YENİ
 ) -> dict:
     """
-    Uzak sunucudaki Ollama HTTP API'ye prompt gönderir, streaming JSON'u birleştirerek düz metin yanıt döndürür.
+    Ollama /api/generate (stream=false). 'system' alanını da destekler.
     Dönen: {"ok": bool, "text": str, "raw": str, "stderr": str}
     """
     payload = {
         "model": model,
         "prompt": prompt,
+        "stream": False,
+        "keep_alive": "30m",
     }
-    if options:
-        payload["options"] = (
-            options  # örn: {"temperature": 0.2, "top_p": 0.9, "num_predict": 256}
-        )
+    if system:
+        payload["system"] = system  # ✅ system desteği
 
-    # curl ile POST; -s = silent. Ollama satır satır JSON üretir (stream).
-    # json.dumps içinde tekrar json.dumps(payload) yapmıyoruz; shell tarafında tek tırnak kaçmasını önlemek için repr benzeri kullanıyoruz.
-    data_literal = json.dumps(payload, ensure_ascii=False)
+    default_opts = {"num_predict": 2048, "temperature": 0.1}
+    if options:
+        default_opts.update(options)
+    payload["options"] = default_opts
+
+    # Kabuk güvenli here-doc (hiçbir $ / ${} genişlemesi olmaz)
+    payload_json = json.dumps(payload, ensure_ascii=False)
     cmd = (
         "curl -s -X POST "
         f"{api_url} "
         "-H 'Content-Type: application/json' "
-        f"-d {json.dumps(data_literal)}"
+        "--data-binary @- <<'JSON'\n"
+        f"{payload_json}\n"
+        "JSON"
     )
 
-    _, out, err = run_remote(client, cmd, timeout=timeout)
+    _, out, err = run_remote(client, cmd, timeout=timeout, pty=False)
 
-    # Streaming JSON her satırı parse edip 'response' alanlarını birleştir
-    pieces = []
-    for line in out.splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            obj = json.loads(line)
-            if "response" in obj:
-                pieces.append(obj["response"])
-        except Exception:
-            # parse edilemeyen satır varsa raw içinde kalır, text'e ekleme.
-            pass
+    text = ""
+    try:
+        obj = json.loads(out) if out.strip() else {}
+        text = obj.get("response", "") if isinstance(obj, dict) else ""
+    except Exception:
+        text = out.strip()
 
-    text = "".join(pieces).strip() if pieces else out.strip()
-    return {"ok": bool(text), "text": text, "raw": out, "stderr": err}
-
+    return {"ok": bool(text), "text": text.strip(), "raw": out, "stderr": err}

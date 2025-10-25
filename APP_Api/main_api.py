@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     ssh = connect_ssh(HOST, PORT, USER, KEY_PATH, PASSFILE_PATH)
 
+<<<<<<< Updated upstream
     try:
         res = send_prompt(
             ssh,
@@ -35,8 +36,33 @@ if __name__ == "__main__":
         )
         #print("LLM OK:", res["ok"])
         print(res["text"])
+=======
+    prompt = """
+    Hello World?
+    """
+
+    try:
+        # LLM çağrısı: sadece prompt gönder
+        res = send_prompt(
+            ssh,
+            prompt=(prompt),
+            model="llama3.1:8b",
+            options={"num_predict": 4096},  # uzun cevap güvenliği
+            timeout=600,
+        )
+        print(res["text"])
+
+>>>>>>> Stashed changes
         if res["stderr"]:
             print("LLM STDERR:\n", res["stderr"])
+
+        res = send_file_inline(
+            ssh,
+            filepath="DATAS_Main\sorted_data.xlsx",
+            question="Give me python codes that to show what this data about ?",
+            model="llama3.1:8b",
+        )
+        print(res["text"])
 
     finally:
         ssh.close()
