@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
-import logo from '../../zenarth.png';
+import logo from '../../05_loaders_daemons/zenarth.png';
 
 const MainWebsite = ({ onNavigateToDashboard }) => {
   const [showLogin, setShowLogin] = useState(false);

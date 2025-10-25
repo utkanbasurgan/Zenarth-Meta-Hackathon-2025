@@ -130,6 +130,7 @@ Command executed successfully - found 10 log files containing React errors`);
     }
   };
 
+
   return (
     <div className="projects-completed">
       <div className="section-header">
@@ -243,93 +244,149 @@ Command executed successfully - found 10 log files containing React errors`);
               </button>
             </div>
             
-            <div className="dual-code-viewer">
-              <div className="code-viewer-left">
-                <div className="code-header">
-                  <span className="code-label">Original Error Log</span>
-                  <div className="code-actions">
-                    <span className="error-badge">React Errors</span>
-                    <button 
-                      className="run-btn"
-                      onClick={runOriginalCommand}
-                      disabled={runningOriginal}
-                    >
-                      {runningOriginal ? (
-                        <>
-                          <div className="spinner"></div>
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <i className="fas fa-play"></i>
-                          Analyze Log
-                        </>
-                      )}
-                    </button>
+            <div className="modal-body">
+              {/* Error Details Section */}
+              <div className="error-details-section">
+                <div className="error-details-header">
+                  <h4>Error Analysis</h4>
+                  <div className="error-stats">
+                    <div className="error-stat">
+                      <span className="stat-label">Errors Found:</span>
+                      <span className="stat-value">4</span>
+                    </div>
+                    <div className="error-stat">
+                      <span className="stat-label">Severity:</span>
+                      <span className="stat-value high">High</span>
+                    </div>
+                    <div className="error-stat">
+                      <span className="stat-label">Status:</span>
+                      <span className="stat-value">Active</span>
+                    </div>
                   </div>
                 </div>
-                <pre className="code-block">{errorLog}</pre>
-                {originalOutput && (
-                  <div className="output-container">
-                    <div className="output-header">
-                      <i className="fas fa-terminal"></i>
-                      <span>Analysis Output</span>
+                
+                <div className="error-summary">
+                  <div className="error-item">
+                    <i className="fas fa-exclamation-triangle error-icon"></i>
+                    <div className="error-info">
+                      <strong>React Error #31</strong>
+                      <p>findDOMNode issue in component lifecycle</p>
                     </div>
-                    <pre className="output-text">{originalOutput}</pre>
                   </div>
-                )}
+                  <div className="error-item">
+                    <i className="fas fa-bug error-icon"></i>
+                    <div className="error-info">
+                      <strong>TypeError: Cannot read property 'map'</strong>
+                      <p>Undefined array access in UserList component</p>
+                    </div>
+                  </div>
+                  <div className="error-item">
+                    <i className="fas fa-memory error-icon"></i>
+                    <div className="error-info">
+                      <strong>Memory Leak Warning</strong>
+                      <p>State update on unmounted component</p>
+                    </div>
+                  </div>
+                  <div className="error-item">
+                    <i className="fas fa-code error-icon"></i>
+                    <div className="error-info">
+                      <strong>Element type is invalid</strong>
+                      <p>Import/export issue with component definition</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="code-viewer-right">
-                <div className="code-header">
-                  <span className="code-label">AI-Generated Fix</span>
-                  <div className="code-actions">
-                    <span className="ai-badge">AI Generated</span>
-                    {aiFixedCommand && (
+              {/* Dual Code Viewers Section */}
+              <div className="dual-code-viewer">
+                <div className="code-viewer-left">
+                  <div className="code-header">
+                    <span className="code-label">Original Error Log</span>
+                    <div className="code-actions">
+                      <span className="error-badge">React Errors</span>
                       <button 
-                        className="run-btn fixed-run-btn"
-                        onClick={runFixedCommand}
-                        disabled={runningFixed}
+                        className="run-btn"
+                        onClick={runOriginalCommand}
+                        disabled={runningOriginal}
                       >
-                        {runningFixed ? (
+                        {runningOriginal ? (
                           <>
                             <div className="spinner"></div>
-                            Running...
+                            Analyzing...
                           </>
                         ) : (
                           <>
                             <i className="fas fa-play"></i>
-                            Run Fix
+                            Analyze Log
                           </>
                         )}
                       </button>
-                    )}
+                    </div>
                   </div>
+                  <pre className="code-block">{errorLog}</pre>
+                  {originalOutput && (
+                    <div className="output-container">
+                      <div className="output-header">
+                        <i className="fas fa-terminal"></i>
+                        <span>Analysis Output</span>
+                      </div>
+                      <pre className="output-text">{originalOutput}</pre>
+                    </div>
+                  )}
                 </div>
-                {aiFixedCommand ? (
-                  <pre className="code-block ai-fixed-code">{aiFixedCommand}</pre>
-                ) : (
-                  <div className="placeholder-code">
-                    <div className="placeholder-content">
-                      <i className="fas fa-robot"></i>
-                      <p>AI fix will appear here after clicking "AI Quick Fix"</p>
+
+                <div className="code-viewer-right">
+                  <div className="code-header">
+                    <span className="code-label">AI-Generated Fix</span>
+                    <div className="code-actions">
+                      <span className="ai-badge">AI Generated</span>
+                      {aiFixedCommand && (
+                        <button 
+                          className="run-btn fixed-run-btn"
+                          onClick={runFixedCommand}
+                          disabled={runningFixed}
+                        >
+                          {runningFixed ? (
+                            <>
+                              <div className="spinner"></div>
+                              Running...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-play"></i>
+                              Run Fix
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
-                )}
-                {fixedOutput && (
-                  <div className="output-container fixed-output">
-                    <div className="output-header">
-                      <i className="fas fa-check-circle"></i>
-                      <span>Fix Output</span>
+                  {aiFixedCommand ? (
+                    <pre className="code-block ai-fixed-code">{aiFixedCommand}</pre>
+                  ) : (
+                    <div className="placeholder-code">
+                      <div className="placeholder-content">
+                        <i className="fas fa-robot"></i>
+                        <p>AI fix will appear here after clicking "AI Quick Fix"</p>
+                      </div>
                     </div>
-                    <pre className="output-text">{fixedOutput}</pre>
-                  </div>
-                )}
+                  )}
+                  {fixedOutput && (
+                    <div className="output-container fixed-output">
+                      <div className="output-header">
+                        <i className="fas fa-check-circle"></i>
+                        <span>Fix Output</span>
+                      </div>
+                      <pre className="output-text">{fixedOutput}</pre>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
 
       <style jsx>{`
         .projects-completed {
@@ -393,6 +450,7 @@ Command executed successfully - found 10 log files containing React errors`);
           opacity: 0.8;
         }
 
+
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -417,6 +475,12 @@ Command executed successfully - found 10 log files containing React errors`);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
           display: flex;
           flex-direction: column;
+        }
+
+        .modal-body {
+          flex: 1;
+          overflow-y: auto;
+          padding: 0;
         }
 
         .modal-header {
@@ -460,13 +524,106 @@ Command executed successfully - found 10 log files containing React errors`);
           transform: scale(1.1);
         }
 
+        .error-details-section {
+          padding: 2rem;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .error-details-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .error-details-header h4 {
+          margin: 0;
+          color: #1f1e7a;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .error-stats {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .error-stat {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.75rem;
+          color: #666;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1f1e7a;
+        }
+
+        .stat-value.high {
+          color: #dc2626;
+        }
+
+        .error-summary {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1rem;
+        }
+
+        .error-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1rem;
+          background: white;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          transition: all 0.2s ease;
+        }
+
+        .error-item:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transform: translateY(-1px);
+        }
+
+        .error-icon {
+          font-size: 1.25rem;
+          color: #dc2626;
+          margin-top: 0.25rem;
+        }
+
+        .error-info strong {
+          display: block;
+          color: #1f1e7a;
+          font-size: 0.9rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .error-info p {
+          margin: 0;
+          color: #666;
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+
         .dual-code-viewer {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 1rem;
-          margin-bottom: 1rem;
-          flex: 1;
-          overflow: hidden;
+          padding: 2rem;
+          background: white;
+          min-height: 500px;
         }
 
         .code-viewer-left,
@@ -788,6 +945,7 @@ Command executed successfully - found 10 log files containing React errors`);
           line-height: 1.4;
         }
 
+
         @media (max-width: 768px) {
           .projects-completed {
             padding: 1rem;
@@ -811,10 +969,27 @@ Command executed successfully - found 10 log files containing React errors`);
             font-size: 1.25rem;
           }
           
+          .error-details-section {
+            padding: 1rem;
+          }
+          
+          .error-details-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+          
+          .error-stats {
+            gap: 1rem;
+          }
+          
+          .error-summary {
+            grid-template-columns: 1fr;
+          }
+          
           .dual-code-viewer {
             grid-template-columns: 1fr;
             gap: 1rem;
-            margin: 0;
             padding: 1rem;
           }
           
@@ -842,6 +1017,7 @@ Command executed successfully - found 10 log files containing React errors`);
             width: 100%;
             justify-content: center;
           }
+          
         }
       `}</style>
     </div>

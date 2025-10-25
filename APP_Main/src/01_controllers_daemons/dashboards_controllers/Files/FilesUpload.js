@@ -23,7 +23,8 @@ const FilesUpload = () => {
                 uploadDate: new Date().toISOString(),
                 headers: result.data[0].map(header => header.trim()),
                 data: result.data.slice(1).filter(row => row.some(cell => cell)),
-                rowCount: result.data.length - 1
+                rowCount: result.data.length - 1,
+                fileType: 'csv'
               };
               
               setUploadedFiles(prev => [...prev, fileData]);
@@ -42,6 +43,47 @@ const FilesUpload = () => {
           },
           skipEmptyLines: true
         });
+      } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.log')) {
+        // Handle log files
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          const lines = content.split('\n').filter(line => line.trim());
+          
+          if (lines.length > 0) {
+            // Parse log entries - assuming format like [timestamp] message
+            const parsedLines = lines.map(line => {
+              const timestampMatch = line.match(/^\[([^\]]+)\]/);
+              if (timestampMatch) {
+                return [timestampMatch[1], line.replace(/^\[[^\]]+\]\s*/, '')];
+              } else {
+                return ['', line];
+              }
+            });
+            
+            const fileData = {
+              id: Date.now() + Math.random(),
+              name: file.name,
+              size: file.size,
+              uploadDate: new Date().toISOString(),
+              headers: ['Timestamp', 'Message'],
+              data: parsedLines,
+              rowCount: parsedLines.length,
+              fileType: 'log'
+            };
+            
+            setUploadedFiles(prev => [...prev, fileData]);
+            
+            // Store in localStorage for persistence
+            const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+            storedFiles.push(fileData);
+            localStorage.setItem('uploadedFiles', JSON.stringify(storedFiles));
+            
+            // Trigger storage event to update other components
+            window.dispatchEvent(new Event('storage'));
+          }
+        };
+        reader.readAsText(file);
       }
     });
     
@@ -71,8 +113,8 @@ const FilesUpload = () => {
   return (
     <div className="files-upload">
       <div className="section-header">
-        <h2>Upload CSV Files</h2>
-        <p>Upload CSV files to analyze and visualize your data</p>
+        <h2>Upload Data Files</h2>
+        <p>Upload CSV files and log files to analyze and visualize your data</p>
       </div>
 
       <div className="upload-section">
@@ -84,20 +126,20 @@ const FilesUpload = () => {
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
           </div>
-          <h3>Upload CSV Files</h3>
-          <p>Drag and drop your CSV files here or click to browse</p>
+          <h3>Upload Data Files</h3>
+          <p>Drag and drop your CSV or log files here or click to browse</p>
           <label htmlFor="csv-upload" className="upload-button">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            {isUploading ? 'Uploading...' : 'Choose CSV Files'}
+            {isUploading ? 'Uploading...' : 'Choose Data Files'}
           </label>
           <input
             id="csv-upload"
             type="file"
-            accept=".csv"
+            accept=".csv,.txt,.log"
             multiple
             onChange={handleFileUpload}
             style={{ display: 'none' }}

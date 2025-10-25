@@ -29,10 +29,6 @@ import {
   SettingsSecurity
 } from './Settings';
 
-import {
-  FilesUpload
-} from './Files';
-import FileDisplay from './Files/FileDisplay';
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -63,20 +59,17 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   
-  // Files states
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-
-  // Load uploaded files from localStorage
+  // Load user sources from localStorage
   React.useEffect(() => {
-    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
-    setUploadedFiles(storedFiles);
+    const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
+    setDynamicSources(storedSources);
   }, []);
 
-  // Listen for storage changes to update files list
+  // Listen for storage changes to update sources list
   React.useEffect(() => {
     const handleStorageChange = () => {
-      const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
-      setUploadedFiles(storedFiles);
+      const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
+      setDynamicSources(storedSources);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -104,28 +97,11 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     { id: 4, name: 'API Integration', progress: 30, status: 'pending', deadline: '2024-02-28' }
   ];
 
-  // Generate dynamic sub-sections for files
-  const generateFilesSubSections = () => {
-    const baseFiles = [
-      { id: 'upload', name: 'Upload', icon: 'fas fa-cloud-upload-alt' }
-    ];
-    
-    // Add uploaded files as sub-sections
-    const fileSubSections = uploadedFiles.map(file => ({
-      id: `file_${file.id}`,
-      name: file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name,
-      icon: 'fas fa-file-csv',
-      fileId: file.id
-    }));
-    
-    return [...baseFiles, ...fileSubSections];
-  };
 
   // Function to generate projects sub-sections with dynamic sources
   const generateProjectsSubSections = () => {
     const baseProjects = [
       { id: 'main_log', name: 'main_log.txt', icon: 'fas fa-file-alt' },
-      { id: 'project2', name: 'CSV Sorter', icon: 'fas fa-table' },
       { id: 'project3', name: 'Code Debugger', icon: 'fas fa-bug' }
     ];
     
@@ -149,7 +125,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       { id: 'chat', name: 'Chat', icon: 'fas fa-comments' }
     ],
     projects: generateProjectsSubSections(),
-    files: generateFilesSubSections(),
     settings: [
       { id: 'profile', name: 'Profile', icon: 'fas fa-user' },
       { id: 'preferences', name: 'Preferences', icon: 'fas fa-cog' },
@@ -187,6 +162,15 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         createdAt: new Date().toISOString()
       };
       setDynamicSources(prev => [...prev, newSource]);
+      
+      // Save to user cache (localStorage)
+      const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
+      storedSources.push(newSource);
+      localStorage.setItem('userSources', JSON.stringify(storedSources));
+      
+      // Trigger storage event to update other components
+      window.dispatchEvent(new Event('storage'));
+      
       setNewSourceName('');
       setShowAddSourceModal(false);
     }
@@ -213,31 +197,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     return result;
   };
 
-  const handleFileSelect = async (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === 'text/csv') {
-      const text = await file.text();
-      const data = parseCSV(text);
-      
-      if (data.length > 0) {
-        setHeaders(data[0]);
-        setCsvData(data.slice(1));
-        setFileName(file.name);
-        setFilteredData([]);
-        
-        // Generate quick actions for the new data
-        await generateQuickActions(data[0], data.slice(1));
-      }
-    }
-  };
-
-  const handleFileUpload = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.csv';
-    input.onchange = handleFileSelect;
-    input.click();
-  };
 
   const generateQuickActions = async (headers, data) => {
     setIsGeneratingActions(true);
@@ -327,8 +286,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         // Handle projects subpages
         if (activeSubSection === 'main_log') {
           return <Project5 />;
-        } else if (activeSubSection === 'project2') {
-          return <Project2 />;
         } else if (activeSubSection === 'project3') {
           return <Project3 />;
         } else if (activeSubSection.startsWith('source_')) {
@@ -348,19 +305,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           );
         }
         return <Project5 />;
-      case 'files':
-        // Handle files subpages
-        if (activeSubSection.startsWith('file_')) {
-          const fileId = activeSubSection.replace('file_', '');
-          return <FileDisplay fileId={fileId} />;
-        }
-        
-        switch (activeSubSection) {
-          case 'upload':
-            return <FilesUpload />;
-          default:
-            return <FilesUpload />;
-        }
       case 'settings':
         // Handle settings subpages
         switch (activeSubSection) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import './App.css';
-import logo from './zenarth.png';
+import './05_loaders_daemons/App.css';
+import logo from './05_loaders_daemons/zenarth.png';
 import MainWebsite from './01_controllers_daemons/sites_controllers/MainWebsite';
 import Dashboard from './01_controllers_daemons/dashboards_controllers/Dashboard';
 

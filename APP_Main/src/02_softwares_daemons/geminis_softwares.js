@@ -1,4 +1,4 @@
-import { API_CONFIG } from '../settings';
+import { API_CONFIG } from '../05_loaders_daemons/settings';
 
 export class GeminiApiService {
   constructor() {

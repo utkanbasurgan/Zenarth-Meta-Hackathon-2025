@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { generateSimpleChart } from '../../../02_softwares_daemons/aiService';
+import { generateSimpleChart, generateCSVDirectSort } from '../../../02_softwares_daemons/aiService';
 
 const FileDisplay = ({ fileId }) => {
   const [fileData, setFileData] = useState(null);

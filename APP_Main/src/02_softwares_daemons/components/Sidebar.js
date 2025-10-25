@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../zenarth.png';
+import logo from '../../05_loaders_daemons/zenarth.png';
 
 const Sidebar = ({ 
   activeSection, 
@@ -41,17 +41,6 @@ const Sidebar = ({
           >
             <i className="fas fa-folder"></i>
             <span>Projects</span>
-          </button>
-          
-          <button 
-            className={`nav-item ${activeSection === 'files' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('files');
-              setActiveSubSection(subSections.files?.[0]?.id || '');
-            }}
-          >
-            <i className="fas fa-file-upload"></i>
-            <span>Files</span>
           </button>
           
           <button 

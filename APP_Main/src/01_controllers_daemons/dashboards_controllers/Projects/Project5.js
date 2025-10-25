@@ -5,6 +5,9 @@ import ErrorDetailsPopup from './ErrorDetailsPopup';
 const Project5 = () => {
   const [selectedError, setSelectedError] = useState(null);
   const [timeUntilNextCheck, setTimeUntilNextCheck] = useState(10);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [logContent, setLogContent] = useState('');
+  const [loadingLog, setLoadingLog] = useState(false);
 
   const handleErrorClick = (error) => {
     setSelectedError(error);
@@ -12,6 +15,44 @@ const Project5 = () => {
 
   const closePopup = () => {
     setSelectedError(null);
+  };
+
+  const handlePreviewLog = async () => {
+    setLoadingLog(true);
+    setLogContent('');
+    setShowPreviewModal(true);
+    
+    try {
+      // Simulate reading the log file content
+      // In a real implementation, you would fetch the file content from the server
+      const mockLogContent = `[2024-01-15 10:30:45] INFO: Application started successfully
+[2024-01-15 10:30:46] DEBUG: Loading configuration from /etc/app/config.json
+[2024-01-15 10:30:47] INFO: Database connection established
+[2024-01-15 10:30:48] WARN: High memory usage detected: 85%
+[2024-01-15 10:30:49] ERROR: Failed to connect to external API: timeout
+[2024-01-15 10:30:50] INFO: Retrying connection in 5 seconds...
+[2024-01-15 10:30:55] INFO: External API connection successful
+[2024-01-15 10:30:56] DEBUG: Processing user request: GET /api/users
+[2024-01-15 10:30:57] INFO: User authentication successful
+[2024-01-15 10:30:58] DEBUG: Database query executed: SELECT * FROM users WHERE active = 1
+[2024-01-15 10:30:59] INFO: Response sent to client: 200 OK
+[2024-01-15 10:31:00] DEBUG: Request processing time: 1.2s
+[2024-01-15 10:31:01] WARN: Slow query detected: 2.5s execution time
+[2024-01-15 10:31:02] INFO: Cache updated for user data
+[2024-01-15 10:31:03] DEBUG: Session created for user ID: 12345
+[2024-01-15 10:31:04] INFO: User logged in successfully
+[2024-01-15 10:31:05] ERROR: File not found: /uploads/profile_12345.jpg
+[2024-01-15 10:31:06] WARN: Using default profile image
+[2024-01-15 10:31:07] INFO: Profile page rendered successfully
+[2024-01-15 10:31:08] DEBUG: Memory usage: 78% (down from 85%)
+[2024-01-15 10:31:09] INFO: Application running normally`;
+
+      setLogContent(mockLogContent);
+    } catch (error) {
+      setLogContent(`Error reading log file: ${error.message}`);
+    } finally {
+      setLoadingLog(false);
+    }
   };
 
   useEffect(() => {
@@ -57,6 +98,25 @@ const Project5 = () => {
               ></div>
             </div>
           </div>
+          
+          <button 
+            className="preview-log-btn"
+            onClick={handlePreviewLog}
+            disabled={loadingLog}
+          >
+            {loadingLog ? (
+              <>
+                <div className="spinner"></div>
+                Loading...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-eye"></i>
+                <span>Preview Log</span>
+                <i className="fas fa-file-alt"></i>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -333,6 +393,70 @@ const Project5 = () => {
         error={selectedError} 
         onClose={closePopup} 
       />
+
+      {/* Preview Log Modal */}
+      {showPreviewModal && (
+        <div className="modal-overlay" onClick={() => setShowPreviewModal(false)}>
+          <div className="modal-content preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Log File Preview</h3>
+              <p>MAIN_LOG.TXT - Application Log Content</p>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowPreviewModal(false)}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="log-preview-container">
+                <div className="log-preview-header">
+                  <div className="log-info">
+                    <i className="fas fa-file-alt"></i>
+                    <span>File: /Users/utkan.basurgan/Main/1. Works Files/2. Gits Works/Zenarth-Meta-Hackathon-2025/TESTS_Main/myapp/src/log.txt</span>
+                  </div>
+                  <div className="log-stats">
+                    <span className="log-stat">
+                      <i className="fas fa-clock"></i>
+                      Last updated: 2 minutes ago
+                    </span>
+                    <span className="log-stat">
+                      <i className="fas fa-list"></i>
+                      {logContent.split('\n').length} lines
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="code-preview-box">
+                  <div className="code-preview-header">
+                    <span className="code-label">Log Content</span>
+                    <div className="code-actions">
+                      <span className="log-badge">MAIN_LOG.TXT</span>
+                      <button 
+                        className="copy-btn"
+                        onClick={() => navigator.clipboard.writeText(logContent)}
+                      >
+                        <i className="fas fa-copy"></i>
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {loadingLog ? (
+                    <div className="loading-container">
+                      <div className="spinner"></div>
+                      <span>Loading log content...</span>
+                    </div>
+                  ) : (
+                    <pre className="log-content">{logContent}</pre>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

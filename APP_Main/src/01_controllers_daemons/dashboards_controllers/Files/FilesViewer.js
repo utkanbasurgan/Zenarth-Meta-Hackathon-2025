@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { generateCSVSorterCode } from '../../../02_softwares_daemons/aiService';
 
 const FilesViewer = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  
+  // CSV Sorter states
+  const [csvQuery, setCsvQuery] = useState('');
+  const [csvOutput, setCsvOutput] = useState('');
+  const [csvLoading, setCsvLoading] = useState(false);
+  const [showCsvSorter, setShowCsvSorter] = useState(false);
   
 
   useEffect(() => {

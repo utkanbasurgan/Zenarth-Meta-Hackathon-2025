@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
-import logo from '../../zenarth.png';
+import logo from '../../05_loaders_daemons/zenarth.png';
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');

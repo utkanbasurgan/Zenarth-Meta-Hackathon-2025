@@ -4,161 +4,64 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3001;
+const PORT = 3004;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Log file path
-const logFilePath = path.join(__dirname, 'src', 'logs', 'log.txt');
-
-// Ensure logs directory exists
-const logsDir = path.dirname(logFilePath);
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-}
-
-// Initialize log file if it doesn't exist
-if (!fs.existsSync(logFilePath)) {
-  const initialContent = `# Error Logs
-# This file will be automatically updated when errors occur
-# Generated: ${new Date().toISOString()}
-
-========================================
-ERROR LOGS - Application Error Tracking
-========================================
-Total Errors: 0
-Last Updated: ${new Date().toISOString()}
-
-Instructions:
-1. Trigger an error by clicking "❌ Test Failed API" on the home page
-2. This file will be automatically updated with error details
-3. Check this file after each error to see the logged information
-
-========================================
-`;
-  fs.writeFileSync(logFilePath, initialContent, 'utf8');
-}
-
-// API endpoint to log errors
-app.post('/api/log-error', (req, res) => {
+// API endpoint to append to log file
+app.post('/api/write-log', (req, res) => {
   try {
-    const { title, errorData } = req.body;
+    const { message } = req.body;
+    const logPath = path.join(__dirname, 'src', 'log.txt');
     
-    // Read existing content
-    let existingContent = '';
-    try {
-      existingContent = fs.readFileSync(logFilePath, 'utf8');
-    } catch (error) {
-      existingContent = '';
-    }
-
-    // Count existing errors
-    const errorCount = (existingContent.match(/ERROR #\d+/g) || []).length;
-    const newErrorNumber = errorCount + 1;
-
-    // Format new log entry
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      title,
-      ...errorData,
-      userAgent: req.headers['user-agent'],
-      url: req.headers.referer || 'Unknown',
-      sessionId: req.headers['x-session-id'] || 'unknown'
-    };
-
-    const newLogEntry = formatLogEntry(logEntry, newErrorNumber);
+    // Append the message to the log file with timestamp
+    const timestamp = new Date().toISOString();
+    const logEntry = `${timestamp} - ${message}\n`;
     
-    // Append to existing content
-    const updatedContent = existingContent + newLogEntry;
+    fs.appendFileSync(logPath, logEntry, 'utf8');
     
-    // Update header with new count
-    const finalContent = updatedContent.replace(
-      /Total Errors: \d+/,
-      `Total Errors: ${newErrorNumber}`
-    ).replace(
-      /Last Updated: [^\n]+/,
-      `Last Updated: ${new Date().toISOString()}`
-    );
-
-    // Write to file
-    fs.writeFileSync(logFilePath, finalContent, 'utf8');
-    
-    console.log(`📝 Log written to: ${logFilePath}`);
-    console.log(`📊 Total errors logged: ${newErrorNumber}`);
-    
-    res.json({ success: true, errorCount: newErrorNumber });
-    
+    console.log(`Successfully appended "${message}" to log.txt`);
+    res.json({ 
+      success: true, 
+      message: `Successfully appended "${message}" to log.txt`,
+      timestamp: timestamp
+    });
   } catch (error) {
-    console.error('Failed to write log:', error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Error appending to log file:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to append to log file',
+      details: error.message 
+    });
   }
 });
 
-// API endpoint to get logs
-app.get('/api/logs', (req, res) => {
+// API endpoint to read the log file
+app.get('/api/read-log', (req, res) => {
   try {
-    const content = fs.readFileSync(logFilePath, 'utf8');
-    res.json({ content });
+    const logPath = path.join(__dirname, 'src', 'log.txt');
+    const logContent = fs.readFileSync(logPath, 'utf8');
+    
+    res.json({ 
+      success: true, 
+      content: logContent,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error reading log file:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to read log file',
+      details: error.message 
+    });
   }
 });
-
-// API endpoint to clear logs
-app.delete('/api/logs', (req, res) => {
-  try {
-    const initialContent = `# Error Logs
-# This file will be automatically updated when errors occur
-# Generated: ${new Date().toISOString()}
-
-========================================
-ERROR LOGS - Application Error Tracking
-========================================
-Total Errors: 0
-Last Updated: ${new Date().toISOString()}
-
-Instructions:
-1. Trigger an error by clicking "❌ Test Failed API" on the home page
-2. This file will be automatically updated with error details
-3. Check this file after each error to see the logged information
-
-========================================
-`;
-    fs.writeFileSync(logFilePath, initialContent, 'utf8');
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-function formatLogEntry(logEntry, errorNumber) {
-  return `
-========================================
-ERROR #${errorNumber}
-========================================
-Timestamp: ${logEntry.timestamp}
-Title: ${logEntry.title}
-Type: ${logEntry.type}
-Session ID: ${logEntry.sessionId}
-URL: ${logEntry.url}
-User Agent: ${logEntry.userAgent}
-
-Error Details:
-${JSON.stringify(logEntry, null, 2)}
-
-Stack Trace:
-${logEntry.stack || 'No stack trace available'}
-
-Component Stack (React):
-${logEntry.componentStack || 'Not a React component error'}
-
-========================================
-`;
-}
 
 app.listen(PORT, () => {
-  console.log(`🚀 Log server running on http://localhost:${PORT}`);
-  console.log(`📝 Log file location: ${logFilePath}`);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log('API endpoints:');
+  console.log('  POST /api/write-log - Write to log file');
+  console.log('  GET /api/read-log - Read log file');
 });
