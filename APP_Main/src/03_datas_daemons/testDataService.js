@@ -4,8 +4,11 @@
 import dataService from './dataService.js';
 
 // Test function to verify data service functionality
-export const testDataService = () => {
+export const testDataService = async () => {
   console.log('Testing Data Service...');
+  
+  // Wait for initialization
+  await dataService.waitForInit();
   
   // Test 1: Add a source
   console.log('Test 1: Adding a source');

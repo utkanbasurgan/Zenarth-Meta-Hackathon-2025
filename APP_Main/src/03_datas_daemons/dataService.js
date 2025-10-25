@@ -4,17 +4,60 @@
 class DataService {
   constructor() {
     this.dataFilePath = '/src/03_datas_daemons/projects_dats.json';
-    this.data = this.loadData();
+    this.sourcesFilePath = '/src/03_datas_daemons/sources.json';
+    this.data = null;
+    this.sourcesData = null;
+    this.initialized = false;
+    this.init();
+  }
+
+  async init() {
+    try {
+      this.data = await this.loadData();
+      this.sourcesData = await this.loadSourcesData();
+      this.initialized = true;
+    } catch (error) {
+      console.error('Error initializing DataService:', error);
+      // Set default values if initialization fails
+      this.data = {
+        projects: [],
+        sources: [],
+        uploadedFiles: [],
+        projectDetails: {
+          name: '',
+          location: '',
+          build: 'React'
+        },
+        lastUpdated: new Date().toISOString()
+      };
+      this.sourcesData = {
+        sources: [],
+        lastUpdated: new Date().toISOString()
+      };
+      this.initialized = true;
+    }
   }
 
   // Load data from JSON file
-  loadData() {
+  async loadData() {
     try {
-      // In a real application, this would make an API call to read the file
-      // For now, we'll use localStorage as a fallback and structure the data properly
-      const storedData = localStorage.getItem('projectsData');
-      if (storedData) {
-        return JSON.parse(storedData);
+      const response = await fetch('http://localhost:3001/api/data/projects');
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error loading data from API, falling back to localStorage:', error);
+      // Fallback to localStorage if API is not available
+      try {
+        const storedData = localStorage.getItem('projectsData');
+        if (storedData) {
+          return JSON.parse(storedData);
+        }
+      } catch (localError) {
+        console.error('Error loading from localStorage:', localError);
       }
       
       // Return default structure if no data exists
@@ -29,76 +72,232 @@ class DataService {
         },
         lastUpdated: new Date().toISOString()
       };
+    }
+  }
+
+  // Load sources data from sources.json
+  async loadSourcesData() {
+    try {
+      const response = await fetch('http://localhost:3001/api/data/sources');
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading sources data from API, falling back to localStorage:', error);
+      // Fallback to localStorage if API is not available
+      try {
+        const storedSourcesData = localStorage.getItem('sourcesData');
+        if (storedSourcesData) {
+          return JSON.parse(storedSourcesData);
+        }
+      } catch (localError) {
+        console.error('Error loading sources from localStorage:', localError);
+      }
+      
+      // Return default sources structure
       return {
-        projects: [],
         sources: [],
-        uploadedFiles: [],
-        projectDetails: {
-          name: '',
-          location: '',
-          build: 'React'
-        },
         lastUpdated: new Date().toISOString()
       };
     }
   }
 
   // Save data to JSON file
-  saveData() {
+  async saveData() {
     try {
       this.data.lastUpdated = new Date().toISOString();
-      // In a real application, this would make an API call to write to the file
-      // For now, we'll use localStorage as a fallback
-      localStorage.setItem('projectsData', JSON.stringify(this.data, null, 2));
       
-      // Trigger storage event to update other components
-      window.dispatchEvent(new Event('storage'));
-      return true;
+      const response = await fetch('http://localhost:3001/api/data/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.data)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Data saved successfully:', result.message);
+        
+        // Also save to localStorage as backup
+        localStorage.setItem('projectsData', JSON.stringify(this.data, null, 2));
+        
+        // Trigger storage event to update other components
+        window.dispatchEvent(new Event('storage'));
+        return true;
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
-      console.error('Error saving data:', error);
-      return false;
+      console.error('Error saving data to API, falling back to localStorage:', error);
+      // Fallback to localStorage if API is not available
+      try {
+        localStorage.setItem('projectsData', JSON.stringify(this.data, null, 2));
+        window.dispatchEvent(new Event('storage'));
+        return true;
+      } catch (localError) {
+        console.error('Error saving to localStorage:', localError);
+        return false;
+      }
     }
   }
 
-  // Sources management
+  // Save sources data to JSON file
+  async saveSourcesData() {
+    try {
+      this.sourcesData.lastUpdated = new Date().toISOString();
+      
+      const response = await fetch('http://localhost:3001/api/data/sources', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.sourcesData)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Sources data saved successfully:', result.message);
+        
+        // Also save to localStorage as backup
+        localStorage.setItem('sourcesData', JSON.stringify(this.sourcesData, null, 2));
+        
+        // Trigger storage event to update other components
+        window.dispatchEvent(new Event('sourcesUpdated'));
+        return true;
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error saving sources data to API, falling back to localStorage:', error);
+      // Fallback to localStorage if API is not available
+      try {
+        localStorage.setItem('sourcesData', JSON.stringify(this.sourcesData, null, 2));
+        window.dispatchEvent(new Event('sourcesUpdated'));
+        return true;
+      } catch (localError) {
+        console.error('Error saving sources to localStorage:', localError);
+        return false;
+      }
+    }
+  }
+
+  // Sources management - Enhanced for sources.json
   getSources() {
-    return this.data.sources || [];
+    if (!this.sourcesData) {
+      console.warn('DataService not initialized yet, returning empty sources array');
+      return [];
+    }
+    return this.sourcesData.sources || [];
+  }
+
+  getSourceById(sourceId) {
+    if (!this.sourcesData || !this.sourcesData.sources) {
+      return null;
+    }
+    return this.sourcesData.sources.find(source => source.id === sourceId);
   }
 
   addSource(source) {
+    if (!this.sourcesData) {
+      console.error('DataService not initialized, cannot add source');
+      return null;
+    }
+    
     const newSource = {
-      id: Date.now() + Math.random(),
+      id: source.id || `source_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: source.name,
       fileName: source.fileName,
+      type: source.type || 'file',
+      description: source.description || '',
+      settings: source.settings || {},
+      data: source.data || '',
       createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      isActive: source.isActive !== undefined ? source.isActive : true,
       ...source
     };
     
-    this.data.sources = this.data.sources || [];
-    this.data.sources.push(newSource);
-    this.saveData();
+    this.sourcesData.sources = this.sourcesData.sources || [];
+    this.sourcesData.sources.push(newSource);
+    this.saveSourcesData();
     return newSource;
   }
 
   removeSource(sourceId) {
-    this.data.sources = this.data.sources.filter(source => source.id !== sourceId);
-    this.saveData();
+    if (!this.sourcesData || !this.sourcesData.sources) {
+      console.error('DataService not initialized, cannot remove source');
+      return;
+    }
+    this.sourcesData.sources = this.sourcesData.sources.filter(source => source.id !== sourceId);
+    this.saveSourcesData();
   }
 
   updateSource(sourceId, updates) {
-    const sourceIndex = this.data.sources.findIndex(source => source.id === sourceId);
+    if (!this.sourcesData || !this.sourcesData.sources) {
+      console.error('DataService not initialized, cannot update source');
+      return null;
+    }
+    const sourceIndex = this.sourcesData.sources.findIndex(source => source.id === sourceId);
     if (sourceIndex !== -1) {
-      this.data.sources[sourceIndex] = { ...this.data.sources[sourceIndex], ...updates };
-      this.saveData();
-      return this.data.sources[sourceIndex];
+      this.sourcesData.sources[sourceIndex] = { 
+        ...this.sourcesData.sources[sourceIndex], 
+        ...updates,
+        lastUpdated: new Date().toISOString()
+      };
+      this.saveSourcesData();
+      return this.sourcesData.sources[sourceIndex];
     }
     return null;
   }
 
+  updateSourceData(sourceId, data) {
+    if (!this.sourcesData || !this.sourcesData.sources) {
+      console.error('DataService not initialized, cannot update source data');
+      return null;
+    }
+    const sourceIndex = this.sourcesData.sources.findIndex(source => source.id === sourceId);
+    if (sourceIndex !== -1) {
+      this.sourcesData.sources[sourceIndex].data = data;
+      this.sourcesData.sources[sourceIndex].lastUpdated = new Date().toISOString();
+      this.saveSourcesData();
+      return this.sourcesData.sources[sourceIndex];
+    }
+    return null;
+  }
+
+  updateSourceSettings(sourceId, settings) {
+    if (!this.sourcesData || !this.sourcesData.sources) {
+      console.error('DataService not initialized, cannot update source settings');
+      return null;
+    }
+    const sourceIndex = this.sourcesData.sources.findIndex(source => source.id === sourceId);
+    if (sourceIndex !== -1) {
+      this.sourcesData.sources[sourceIndex].settings = { 
+        ...this.sourcesData.sources[sourceIndex].settings, 
+        ...settings 
+      };
+      this.sourcesData.sources[sourceIndex].lastUpdated = new Date().toISOString();
+      this.saveSourcesData();
+      return this.sourcesData.sources[sourceIndex];
+    }
+    return null;
+  }
+
+
+  // Wait for initialization to complete
+  async waitForInit() {
+    while (!this.initialized) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+  }
+
   // Project details management
-  getProjectDetails() {
+  async getProjectDetails() {
+    await this.waitForInit();
     return this.data.projectDetails || {
       name: '',
       location: '',
@@ -106,10 +305,39 @@ class DataService {
     };
   }
 
-  updateProjectDetails(details) {
-    this.data.projectDetails = { ...this.data.projectDetails, ...details };
-    this.saveData();
-    return this.data.projectDetails;
+  async updateProjectDetails(details) {
+    try {
+      const response = await fetch('http://localhost:3001/api/data/project-details', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(details)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Project details updated successfully:', result.message);
+        
+        // Update local data
+        this.data.projectDetails = { ...this.data.projectDetails, ...details };
+        
+        // Also save to localStorage as backup
+        localStorage.setItem('projectsData', JSON.stringify(this.data, null, 2));
+        
+        // Trigger storage event to update other components
+        window.dispatchEvent(new Event('storage'));
+        return this.data.projectDetails;
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error updating project details via API, falling back to local save:', error);
+      // Fallback to local update
+      this.data.projectDetails = { ...this.data.projectDetails, ...details };
+      await this.saveData();
+      return this.data.projectDetails;
+    }
   }
 
   // Uploaded files management
@@ -183,9 +411,19 @@ class DataService {
     return this.data;
   }
 
+  // Get all sources data
+  getAllSourcesData() {
+    return this.sourcesData;
+  }
+
   // Export data to JSON string
   exportData() {
     return JSON.stringify(this.data, null, 2);
+  }
+
+  // Export sources data to JSON string
+  exportSourcesData() {
+    return JSON.stringify(this.sourcesData, null, 2);
   }
 
   // Import data from JSON string
@@ -197,6 +435,19 @@ class DataService {
       return true;
     } catch (error) {
       console.error('Error importing data:', error);
+      return false;
+    }
+  }
+
+  // Import sources data from JSON string
+  importSourcesData(jsonString) {
+    try {
+      const importedData = JSON.parse(jsonString);
+      this.sourcesData = { ...this.sourcesData, ...importedData };
+      this.saveSourcesData();
+      return true;
+    } catch (error) {
+      console.error('Error importing sources data:', error);
       return false;
     }
   }
@@ -215,6 +466,24 @@ class DataService {
       lastUpdated: new Date().toISOString()
     };
     this.saveData();
+  }
+
+  // Clear all sources data
+  clearAllSourcesData() {
+    this.sourcesData = {
+      sources: [],
+      lastUpdated: new Date().toISOString()
+    };
+    this.saveSourcesData();
+  }
+
+  // Reset sources to default
+  resetSourcesToDefault() {
+    this.sourcesData = {
+      sources: [],
+      lastUpdated: new Date().toISOString()
+    };
+    this.saveSourcesData();
   }
 }
 

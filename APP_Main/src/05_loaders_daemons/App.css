@@ -118,15 +118,15 @@
 
         .nav-item:hover 
         {
-          background: rgba(31, 30, 122, 0.1);
-          color: #1f1e7a;
+          background: rgba(0, 123, 255, 0.1);
+          color: #007bff;
         }
 
         .nav-item.active 
         {
-          background: rgba(31, 30, 122, 0.15);
-          color: #1f1e7a;
-          border-left-color: #1f1e7a;
+          background: rgba(0, 123, 255, 0.15);
+          color: #007bff;
+          border-left-color: #007bff;
           font-weight: 600;
         }
 
@@ -441,6 +441,33 @@
           border-color: #1f1e7a;
         }
 
+        /* Popup Text Padding Improvements */
+        .modal-body p,
+        .modal-body div,
+        .modal-body span {
+          padding: 8px 0;
+          line-height: 1.6;
+        }
+
+        .modal-body h1,
+        .modal-body h2,
+        .modal-body h3,
+        .modal-body h4,
+        .modal-body h5,
+        .modal-body h6 {
+          padding: 12px 0 8px 0;
+          margin: 0;
+        }
+
+        .modal-body ul,
+        .modal-body ol {
+          padding: 8px 0 8px 20px;
+        }
+
+        .modal-body li {
+          padding: 4px 0;
+        }
+
         .modal-footer {
           display: flex;
           justify-content: flex-end;
@@ -505,4 +532,57 @@
         .source-info p {
           margin: 8px 0;
           color: #374151;
+        }
+
+        /* Notification Settings Styles */
+        .notification-options {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-top: 8px;
+        }
+
+        .notification-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 16px;
+          background: #f9fafb;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 14px;
+          color: #374151;
+        }
+
+        .notification-item:hover {
+          background: #f3f4f6;
+          border-color: #d1d5db;
+          transform: translateX(2px);
+        }
+
+        .notification-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin: 0;
+          cursor: pointer;
+          accent-color: #1f1e7a;
+        }
+
+        .notification-item span {
+          font-weight: 500;
+          color: #374151;
+          flex: 1;
+        }
+
+        .notification-item:has(input:checked) {
+          background: #f0f9ff;
+          border-color: #1f1e7a;
+          color: #1f1e7a;
+        }
+
+        .notification-item:has(input:checked) span {
+          color: #1f1e7a;
+          font-weight: 600;
         }

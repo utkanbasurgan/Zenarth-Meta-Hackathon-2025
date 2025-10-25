@@ -16,10 +16,10 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Herhangi bir giriş yapıldığında dashboard'a yönlendir
-    // Bu örnekte basit bir kontrol yapıyoruz
+    // Redirect to dashboard when any login is made
+    // In this example, we do a simple check
     if (formData.email && formData.password) {
-      // Dashboard'a yönlendirme için parent component'e bilgi gönder
+      // Send information to parent component for dashboard redirection
       if (onNavigateToDashboard) {
         onNavigateToDashboard();
       } else {
@@ -38,7 +38,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
       <div className="login-overlay">
         <div className="login-modal">
           <div className="login-header">
-            <h2>Giriş Yap</h2>
+            <h2>Sign In</h2>
             <button className="close-btn" onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
@@ -46,27 +46,27 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
           
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="email">E-posta</label>
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="E-posta adresinizi girin"
+                placeholder="Enter your email address"
                 required
               />
             </div>
             
             <div className="form-group">
-              <label htmlFor="password">Şifre</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Şifrenizi girin"
+                placeholder="Enter your password"
                 required
               />
             </div>
@@ -74,19 +74,19 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
             <div className="form-options">
               <label className="remember-me">
                 <input type="checkbox" />
-                <span>Beni hatırla</span>
+                <span>Remember me</span>
               </label>
-              <a href="#" className="forgot-password">Şifremi unuttum</a>
+              <a href="#" className="forgot-password">Forgot password?</a>
             </div>
             
             <button type="submit" className="login-btn">
               <i className="fas fa-sign-in-alt"></i>
-              Giriş Yap
+              Sign In
             </button>
           </form>
           
           <div className="login-footer">
-            <p>Hesabınız yok mu? <a href="#" className="register-link">Kayıt olun</a></p>
+            <p>Don't have an account? <a href="#" className="register-link">Sign up</a></p>
           </div>
         </div>
       </div>
@@ -183,7 +183,7 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
 
         .form-group input:focus {
           outline: none;
-          border-color: #1f1e7a;
+          border-color: #007bff;
         }
 
         .form-options {
@@ -205,17 +205,17 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .forgot-password {
-          color: #1f1e7a;
+          color: #007bff;
           text-decoration: none;
           transition: color 0.3s;
         }
 
         .forgot-password:hover {
-          color: #5a6fd8;
+          color: #0056b3;
         }
 
         .login-btn {
-          background: linear-gradient(135deg, #1f1e7a 0%, #1f1e7a 100%);
+          background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
           color: white;
           border: none;
           padding: 1rem;
@@ -247,14 +247,14 @@ const LoginPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .register-link {
-          color: #1f1e7a;
+          color: #007bff;
           text-decoration: none;
           font-weight: 600;
           transition: color 0.3s;
         }
 
         .register-link:hover {
-          color: #5a6fd8;
+          color: #0056b3;
         }
 
         @media (max-width: 480px) {

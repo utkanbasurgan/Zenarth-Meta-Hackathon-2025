@@ -102,7 +102,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         }
 
         .navbar {
-          background: linear-gradient(135deg, #1f1e7a 0%, #0f0e5a 100%);
+          background: linear-gradient(135deg, #1f1e7a 0%, #2d2b9e 100%);
           color: white;
           padding: 1rem 0;
           box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -192,7 +192,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         }
 
         .hero-section {
-          background: linear-gradient(135deg, #1f1e7a 0%, #0f0e5a 100%);
+          background: linear-gradient(135deg, #1f1e7a 0%, #2d2b9e 100%);
           color: white;
           padding: 4rem 2rem;
           display: flex;

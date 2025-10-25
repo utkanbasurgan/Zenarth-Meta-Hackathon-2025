@@ -1,69 +1,147 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import dataService from '../../../03_datas_daemons/dataService';
 
 const AdminsPage = () => {
-  const [admins, setAdmins] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@zenarth.ai',
-      role: 'Super Admin',
-      status: 'active',
-      lastLogin: '2025-01-15 10:30:00',
-      permissions: ['all']
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane.smith@zenarth.ai',
-      role: 'Admin',
-      status: 'active',
-      lastLogin: '2025-01-15 09:15:00',
-      permissions: ['users', 'projects', 'settings']
-    },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      email: 'mike.johnson@zenarth.ai',
-      role: 'Admin',
-      status: 'inactive',
-      lastLogin: '2025-01-10 16:45:00',
-      permissions: ['users', 'projects']
-    }
-  ]);
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAdmin, setNewAdmin] = useState({
     name: '',
     email: '',
-    role: 'Admin',
-    permissions: []
+    role: 'admin',
+    notifications: {
+      handledErrors: true,
+      coveredErrors: true,
+      criticalErrors: true
+    }
   });
 
-  const handleAddAdmin = () => {
+  // Load admins data from dataService
+  useEffect(() => {
+    const loadAdminsData = async () => {
+      try {
+        await dataService.waitForInit();
+        const allData = dataService.getAllData();
+        // Filter team members with admin role
+        const adminMembers = (allData.team || []).filter(member => member.role === 'admin');
+        setAdmins(adminMembers);
+      } catch (error) {
+        console.error('Error loading admins data:', error);
+        // Fallback to empty array if loading fails
+        setAdmins([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAdminsData();
+  }, []);
+
+  const handleAddAdmin = async () => {
     if (newAdmin.name && newAdmin.email) {
       const admin = {
         id: Date.now(),
-        ...newAdmin,
-        status: 'active',
-        lastLogin: new Date().toLocaleString()
+        ...newAdmin
       };
-      setAdmins([...admins, admin]);
-      setNewAdmin({ name: '', email: '', role: 'Admin', permissions: [] });
+      
+      // Update local state
+      const updatedAdmins = [...admins, admin];
+      setAdmins(updatedAdmins);
+      
+      // Save to dataService - add to team array
+      try {
+        await dataService.waitForInit();
+        const allData = dataService.getAllData();
+        // Add new admin to team array
+        allData.team = [...(allData.team || []), admin];
+        await dataService.saveData();
+        console.log('Admin saved successfully');
+      } catch (error) {
+        console.error('Error saving admin:', error);
+        // Revert local state on error
+        setAdmins(admins);
+      }
+      
+      setNewAdmin({ 
+        name: '', 
+        email: '', 
+        role: 'admin', 
+        notifications: {
+          handledErrors: true,
+          coveredErrors: true,
+          criticalErrors: true
+        }
+      });
       setShowAddModal(false);
     }
   };
 
-  const handleDeleteAdmin = (id) => {
-    setAdmins(admins.filter(admin => admin.id !== id));
-  };
-
-  const getStatusColor = (status) => {
-    return status === 'active' ? '#4facfe' : '#dc3545';
+  const handleDeleteAdmin = async (id) => {
+    const updatedAdmins = admins.filter(admin => admin.id !== id);
+    setAdmins(updatedAdmins);
+    
+    // Save to dataService - remove from team array
+    try {
+      await dataService.waitForInit();
+      const allData = dataService.getAllData();
+      // Remove admin from team array
+      allData.team = (allData.team || []).filter(member => member.id !== id);
+      await dataService.saveData();
+      console.log('Admin deleted successfully');
+    } catch (error) {
+      console.error('Error deleting admin:', error);
+      // Revert local state on error
+      setAdmins(admins);
+    }
   };
 
   const getRoleColor = (role) => {
-    return role === 'Super Admin' ? '#1f1e7a' : '#43e97b';
+    return role === 'admin' ? '#dc3545' : '#28a745';
   };
+
+  const toggleNotification = async (adminId, notificationType) => {
+    const updatedAdmins = admins.map(admin => {
+      if (admin.id === adminId) {
+        return {
+          ...admin,
+          notifications: {
+            ...admin.notifications,
+            [notificationType]: !admin.notifications[notificationType]
+          }
+        };
+      }
+      return admin;
+    });
+    
+    setAdmins(updatedAdmins);
+    
+    // Save to dataService
+    try {
+      await dataService.waitForInit();
+      const allData = dataService.getAllData();
+      // Update the team array with the modified admin
+      allData.team = (allData.team || []).map(member => 
+        member.id === adminId ? updatedAdmins.find(admin => admin.id === adminId) : member
+      );
+      await dataService.saveData();
+      console.log('Notification settings updated successfully');
+    } catch (error) {
+      console.error('Error updating notification settings:', error);
+      // Revert local state on error
+      setAdmins(admins);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admins-section">
+        <div className="loading-container">
+          <h2>Loading Administrators...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admins-section">
@@ -74,7 +152,7 @@ const AdminsPage = () => {
           onClick={() => setShowAddModal(true)}
         >
           <i className="fas fa-plus"></i>
-          Add Admin
+          New Administrator
         </button>
       </div>
 
@@ -111,30 +189,33 @@ const AdminsPage = () => {
                 </span>
               </div>
               
-              <div className="detail-row">
-                <span className="label">Status:</span>
-                <span 
-                  className="status-badge"
-                  style={{ color: getStatusColor(admin.status) }}
-                >
-                  <i className={`fas fa-circle`}></i>
-                  {admin.status}
-                </span>
-              </div>
-              
-              <div className="detail-row">
-                <span className="label">Last Login:</span>
-                <span className="value">{admin.lastLogin}</span>
-              </div>
-              
-              <div className="detail-row">
-                <span className="label">Permissions:</span>
-                <div className="permissions">
-                  {admin.permissions.map(permission => (
-                    <span key={permission} className="permission-tag">
-                      {permission}
-                    </span>
-                  ))}
+              <div className="notifications-section">
+                <h4>Notifications:</h4>
+                <div className="notification-options">
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={admin.notifications.handledErrors}
+                      onChange={() => toggleNotification(admin.id, 'handledErrors')}
+                    />
+                    <span>Handled Errors</span>
+                  </label>
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={admin.notifications.coveredErrors}
+                      onChange={() => toggleNotification(admin.id, 'coveredErrors')}
+                    />
+                    <span>Covered Errors</span>
+                  </label>
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={admin.notifications.criticalErrors}
+                      onChange={() => toggleNotification(admin.id, 'criticalErrors')}
+                    />
+                    <span>Critical Errors</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -185,9 +266,56 @@ const AdminsPage = () => {
                   value={newAdmin.role}
                   onChange={(e) => setNewAdmin({...newAdmin, role: e.target.value})}
                 >
-                  <option value="Admin">Admin</option>
-                  <option value="Super Admin">Super Admin</option>
+                  <option value="admin">Admin</option>
                 </select>
+              </div>
+
+              <div className="form-group">
+                <label>Notification Settings:</label>
+                <div className="notification-options">
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={newAdmin.notifications.handledErrors}
+                      onChange={(e) => setNewAdmin({
+                        ...newAdmin, 
+                        notifications: {
+                          ...newAdmin.notifications, 
+                          handledErrors: e.target.checked
+                        }
+                      })}
+                    />
+                    <span>Handled Errors</span>
+                  </label>
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={newAdmin.notifications.coveredErrors}
+                      onChange={(e) => setNewAdmin({
+                        ...newAdmin, 
+                        notifications: {
+                          ...newAdmin.notifications, 
+                          coveredErrors: e.target.checked
+                        }
+                      })}
+                    />
+                    <span>Covered Errors</span>
+                  </label>
+                  <label className="notification-item">
+                    <input
+                      type="checkbox"
+                      checked={newAdmin.notifications.criticalErrors}
+                      onChange={(e) => setNewAdmin({
+                        ...newAdmin, 
+                        notifications: {
+                          ...newAdmin.notifications, 
+                          criticalErrors: e.target.checked
+                        }
+                      })}
+                    />
+                    <span>Critical Errors</span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className="modal-footer">
@@ -214,6 +342,13 @@ const AdminsPage = () => {
           padding: 2rem;
         }
 
+        .loading-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 200px;
+        }
+
         .section-header {
           display: flex;
           justify-content: space-between;
@@ -229,7 +364,7 @@ const AdminsPage = () => {
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: linear-gradient(135deg, #007bff, #0056b3);
           color: white;
           border: none;
           padding: 0.75rem 1.5rem;
@@ -240,12 +375,12 @@ const AdminsPage = () => {
           align-items: center;
           gap: 0.5rem;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(31, 30, 122, 0.3);
+          box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(31, 30, 122, 0.4);
+          box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
         }
 
         .admins-grid {
@@ -352,7 +487,7 @@ const AdminsPage = () => {
           font-size: 0.9rem;
         }
 
-        .role-badge, .status-badge {
+        .role-badge {
           padding: 0.25rem 0.75rem;
           border-radius: 20px;
           color: white;
@@ -363,24 +498,59 @@ const AdminsPage = () => {
           gap: 0.25rem;
         }
 
-        .status-badge {
-          background: transparent;
-          color: #666;
+        .notifications-section {
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .permissions {
+        .notifications-section h4 {
+          margin: 0 0 0.75rem 0;
+          color: #333;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+
+        .notification-options {
           display: flex;
-          flex-wrap: wrap;
+          flex-direction: column;
           gap: 0.5rem;
         }
 
-        .permission-tag {
-          background: rgba(31, 30, 122, 0.1);
-          color: #1f1e7a;
-          padding: 0.25rem 0.5rem;
-          border-radius: 12px;
-          font-size: 0.75rem;
+        .notification-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          font-size: 0.9rem;
+          color: #555;
+          padding: 12px 16px;
+          background: #f8f9fa;
+          border: 1px solid #e9ecef;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .notification-item:hover {
+          background: #e9ecef;
+          border-color: #1f1e7a;
+        }
+
+        .notification-item input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+          accent-color: #1f1e7a;
+          margin: 0;
+          flex-shrink: 0;
+        }
+
+        .notification-item span {
           font-weight: 500;
+          color: #374151;
+          flex: 1;
         }
 
         .modal-overlay {
@@ -416,7 +586,7 @@ const AdminsPage = () => {
 
         .modal-header h3 {
           margin: 0;
-          color: #333;
+          color: white;
           font-weight: 600;
         }
 
@@ -453,16 +623,42 @@ const AdminsPage = () => {
         .form-group input,
         .form-group select {
           width: 100%;
-          padding: 0.75rem;
-          border: 2px solid rgba(31, 30, 122, 0.2);
+          padding: 1rem;
+          border: 2px solid #e1e5e9;
           border-radius: 8px;
-          font-size: 0.95rem;
+          font-size: 1rem;
           transition: border-color 0.3s ease;
+          background-color: white;
+          color: #333;
+          box-sizing: border-box;
         }
 
         .form-group input:focus,
         .form-group select:focus {
           outline: none;
+          border-color: #1f1e7a;
+          box-shadow: 0 0 0 3px rgba(31, 30, 122, 0.1);
+        }
+
+        .form-group select {
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 1rem center;
+          background-size: 1rem;
+          padding-right: 3rem;
+        }
+
+        .notification-options {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-top: 0.5rem;
+          width: 100%;
+        }
+
+        .form-group select:hover {
           border-color: #1f1e7a;
         }
 

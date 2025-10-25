@@ -32,31 +32,31 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
     const newErrors = {};
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Ad alanı zorunludur';
+      newErrors.firstName = 'First name is required';
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Soyad alanı zorunludur';
+      newErrors.lastName = 'Last name is required';
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'E-posta alanı zorunludur';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Geçerli bir e-posta adresi girin';
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
-      newErrors.password = 'Şifre alanı zorunludur';
+      newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Şifre en az 6 karakter olmalıdır';
+      newErrors.password = 'Password must be at least 6 characters';
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Şifreler eşleşmiyor';
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.terms) {
-      newErrors.terms = 'Kullanım şartlarını kabul etmelisiniz';
+      newErrors.terms = 'You must accept the terms of use';
     }
 
     setErrors(newErrors);
@@ -67,7 +67,7 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Kayıt başarılı, dashboard'a yönlendir
+      // Registration successful, redirect to dashboard
       if (onNavigateToDashboard) {
         onNavigateToDashboard();
       } else {
@@ -86,7 +86,7 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
       <div className="register-overlay">
         <div className="register-modal">
           <div className="register-header">
-            <h2>Kayıt Ol</h2>
+            <h2>Sign Up</h2>
             <button className="close-btn" onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
@@ -95,28 +95,28 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="firstName">Ad</label>
+                <label htmlFor="firstName">First Name</label>
                 <input
                   type="text"
                   id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  placeholder="Adınız"
+                  placeholder="Your first name"
                   className={errors.firstName ? 'error' : ''}
                 />
                 {errors.firstName && <span className="error-message">{errors.firstName}</span>}
               </div>
               
               <div className="form-group">
-                <label htmlFor="lastName">Soyad</label>
+                <label htmlFor="lastName">Last Name</label>
                 <input
                   type="text"
                   id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  placeholder="Soyadınız"
+                  placeholder="Your last name"
                   className={errors.lastName ? 'error' : ''}
                 />
                 {errors.lastName && <span className="error-message">{errors.lastName}</span>}
@@ -124,42 +124,42 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
             </div>
             
             <div className="form-group">
-              <label htmlFor="email">E-posta</label>
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="E-posta adresinizi girin"
+                placeholder="Enter your email address"
                 className={errors.email ? 'error' : ''}
               />
               {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
             
             <div className="form-group">
-              <label htmlFor="password">Şifre</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Şifrenizi girin"
+                placeholder="Enter your password"
                 className={errors.password ? 'error' : ''}
               />
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
             
             <div className="form-group">
-              <label htmlFor="confirmPassword">Şifre Tekrar</label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="Şifrenizi tekrar girin"
+                placeholder="Confirm your password"
                 className={errors.confirmPassword ? 'error' : ''}
               />
               {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
@@ -175,8 +175,8 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
                 />
                 <span className="checkmark"></span>
                 <span className="terms-text">
-                  <a href="#" className="terms-link">Kullanım şartlarını</a> ve 
-                  <a href="#" className="terms-link"> gizlilik politikasını</a> kabul ediyorum
+                  I accept the <a href="#" className="terms-link">terms of use</a> and 
+                  <a href="#" className="terms-link">privacy policy</a>
                 </span>
               </label>
               {errors.terms && <span className="error-message">{errors.terms}</span>}
@@ -184,12 +184,12 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
             
             <button type="submit" className="register-btn">
               <i className="fas fa-user-plus"></i>
-              Kayıt Ol
+              Sign Up
             </button>
           </form>
           
           <div className="register-footer">
-            <p>Zaten hesabınız var mı? <a href="#" className="login-link">Giriş yapın</a></p>
+            <p>Already have an account? <a href="#" className="login-link">Sign in</a></p>
           </div>
         </div>
       </div>
@@ -305,7 +305,7 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
 
         .form-group input:focus {
           outline: none;
-          border-color: #1f1e7a;
+          border-color: #007bff;
         }
 
         .form-group input.error {
@@ -349,8 +349,8 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .terms-label input[type="checkbox"]:checked + .checkmark {
-          background-color: #1f1e7a;
-          border-color: #1f1e7a;
+          background-color: #007bff;
+          border-color: #007bff;
         }
 
         .terms-label input[type="checkbox"]:checked + .checkmark::after {
@@ -365,17 +365,17 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .terms-link {
-          color: #1f1e7a;
+          color: #007bff;
           text-decoration: none;
           transition: color 0.3s;
         }
 
         .terms-link:hover {
-          color: #5a6fd8;
+          color: #0056b3;
         }
 
         .register-btn {
-          background: linear-gradient(135deg, #1f1e7a 0%, #1f1e7a 100%);
+          background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
           color: white;
           border: none;
           padding: 1rem;
@@ -407,14 +407,14 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
         }
 
         .login-link {
-          color: #1f1e7a;
+          color: #007bff;
           text-decoration: none;
           font-weight: 600;
           transition: color 0.3s;
         }
 
         .login-link:hover {
-          color: #5a6fd8;
+          color: #0056b3;
         }
 
         @media (max-width: 480px) {

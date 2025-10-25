@@ -7,5 +7,73 @@
     "location": "",
     "build": "React"
   },
+  "team": [
+    {
+      "id": 1,
+      "name": "Sarah Johnson",
+      "email": "sarah.johnson@zenarth.ai",
+      "role": "admin",
+      "notifications": {
+        "handledErrors": true,
+        "coveredErrors": true,
+        "criticalErrors": true
+      }
+    },
+    {
+      "id": 2,
+      "name": "Michael Chen",
+      "email": "michael.chen@zenarth.ai",
+      "role": "team",
+      "notifications": {
+        "handledErrors": false,
+        "coveredErrors": true,
+        "criticalErrors": true
+      }
+    },
+    {
+      "id": 3,
+      "name": "Emily Rodriguez",
+      "email": "emily.rodriguez@zenarth.ai",
+      "role": "team",
+      "notifications": {
+        "handledErrors": true,
+        "coveredErrors": false,
+        "criticalErrors": true
+      }
+    },
+    {
+      "id": 4,
+      "name": "David Kim",
+      "email": "david.kim@zenarth.ai",
+      "role": "admin",
+      "notifications": {
+        "handledErrors": true,
+        "coveredErrors": true,
+        "criticalErrors": true
+      }
+    },
+    {
+      "id": 5,
+      "name": "Lisa Wang",
+      "email": "lisa.wang@zenarth.ai",
+      "role": "team",
+      "notifications": {
+        "handledErrors": false,
+        "coveredErrors": false,
+        "criticalErrors": true
+      }
+    },
+    {
+      "id": 6,
+      "name": "Alex Thompson",
+      "email": "alex.thompson@zenarth.ai",
+      "role": "team",
+      "notifications": {
+        "handledErrors": true,
+        "coveredErrors": true,
+        "criticalErrors": false
+      }
+    }
+  ],
   "lastUpdated": "2024-01-01T00:00:00.000Z"
 }

@@ -5,28 +5,113 @@ const DetailPage = () => {
   const [projectName, setProjectName] = useState('');
   const [projectLocation, setProjectLocation] = useState('');
   const [projectBuild, setProjectBuild] = useState('React');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
 
   // Load project details from data service on component mount
   useEffect(() => {
-    const projectDetails = dataService.getProjectDetails();
-    setProjectName(projectDetails.name || '');
-    setProjectLocation(projectDetails.location || '');
-    setProjectBuild(projectDetails.build || 'React');
+    const loadProjectDetails = async () => {
+      setIsLoading(true);
+      try {
+        const projectDetails = await dataService.getProjectDetails();
+        setProjectName(projectDetails.name || '');
+        setProjectLocation(projectDetails.location || '');
+        setProjectBuild(projectDetails.build || 'React');
+      } catch (error) {
+        console.error('Error loading project details:', error);
+        setSaveStatus('Error loading project details');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProjectDetails();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
+    setSaveStatus('Saving...');
+    
     const projectDetails = {
       name: projectName,
       location: projectLocation,
       build: projectBuild
     };
     
-    // Save project details to JSON file via data service
-    dataService.updateProjectDetails(projectDetails);
+    try {
+      // Save project details to JSON file via data service
+      await dataService.updateProjectDetails(projectDetails);
+      
+      console.log('Project Details saved:', projectDetails);
+      setSaveStatus('Project details saved successfully!');
+      
+      // Clear status message after 3 seconds
+      setTimeout(() => {
+        setSaveStatus('');
+      }, 3000);
+    } catch (error) {
+      console.error('Error saving project details:', error);
+      setSaveStatus('Error saving project details. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleFolderSelect = () => {
+    // Create a hidden file input element for folder selection
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.webkitdirectory = true; // This allows folder selection
+    input.directory = true;
+    input.multiple = true;
+    input.style.display = 'none';
     
-    console.log('Project Details saved:', projectDetails);
-    alert('Project details saved successfully!');
+    input.onchange = (e) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        // Get the folder path from the first file's webkitRelativePath
+        const firstFile = files[0];
+        if (firstFile.webkitRelativePath) {
+          // Extract the folder path (everything before the first slash)
+          const folderPath = firstFile.webkitRelativePath.split('/')[0];
+          
+          // For webkitRelativePath, we need to construct the full path
+          // The webkitRelativePath gives us the relative path from the selected folder
+          let fullPath = firstFile.webkitRelativePath;
+          
+          // If we have a full path, extract the directory
+          if (fullPath.includes('/')) {
+            const lastSlashIndex = fullPath.lastIndexOf('/');
+            const directoryPath = fullPath.substring(0, lastSlashIndex);
+            setProjectLocation(directoryPath);
+          } else {
+            // Fallback: use the folder name
+            setProjectLocation(folderPath);
+          }
+        } else {
+          // If no webkitRelativePath, try to use the file name as folder name
+          const fileName = firstFile.name;
+          if (fileName) {
+            setProjectLocation(fileName);
+          }
+        }
+      }
+    };
+    
+    // Add the input to the DOM temporarily
+    document.body.appendChild(input);
+    
+    // Trigger the folder selection dialog
+    input.click();
+    
+    // Clean up the input element after use
+    setTimeout(() => {
+      if (document.body.contains(input)) {
+        document.body.removeChild(input);
+      }
+    }, 1000);
   };
 
   return (
@@ -59,15 +144,26 @@ const DetailPage = () => {
               <i className="fas fa-map-marker-alt"></i>
               Project Location
             </label>
-            <input
-              type="text"
-              id="projectLocation"
-              className="form-input"
-              value={projectLocation}
-              onChange={(e) => setProjectLocation(e.target.value)}
-              placeholder="Enter project location"
-              required
-            />
+            <div className="input-with-button">
+              <input
+                type="text"
+                id="projectLocation"
+                className="form-input"
+                value={projectLocation}
+                onChange={(e) => setProjectLocation(e.target.value)}
+                placeholder="Enter project location or click Select Folder"
+                required
+              />
+              <button
+                type="button"
+                className="btn-folder-select"
+                onClick={handleFolderSelect}
+                title="Select a folder"
+              >
+                <i className="fas fa-folder"></i>
+                Select Folder
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
@@ -86,15 +182,34 @@ const DetailPage = () => {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              <i className="fas fa-save"></i>
-              Save Project
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={isSaving || isLoading}
+            >
+              {isSaving ? (
+                <>
+                  <i className="fas fa-spinner fa-spin"></i>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-save"></i>
+                  Save Project
+                </>
+              )}
             </button>
             <button type="button" className="btn-secondary">
               <i className="fas fa-times"></i>
               Cancel
             </button>
           </div>
+          
+          {saveStatus && (
+            <div className={`save-status ${saveStatus.includes('Error') ? 'error' : 'success'}`}>
+              {saveStatus}
+            </div>
+          )}
         </form>
 
         <div className="project-preview">
@@ -183,6 +298,69 @@ const DetailPage = () => {
           box-shadow: 0 0 0 3px rgba(31, 30, 122, 0.1);
         }
 
+        .form-select {
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 1rem center;
+          background-size: 1rem;
+          padding-right: 3rem;
+          background-color: white;
+          color: #333;
+          box-sizing: border-box;
+        }
+
+        .form-select:hover {
+          border-color: #1f1e7a;
+        }
+
+        .input-with-button {
+          display: flex;
+          gap: 0.5rem;
+          align-items: stretch;
+        }
+
+        .input-with-button .form-input {
+          flex: 1;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-right: none;
+        }
+
+        .input-with-button .form-input:focus {
+          border-right: none;
+        }
+
+        .btn-folder-select {
+          padding: 0.75rem 1rem;
+          background: #f8f9fa;
+          color: #666;
+          border: 2px solid #e1e5e9;
+          border-left: none;
+          border-radius: 0 8px 8px 0;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          white-space: nowrap;
+        }
+
+        .btn-folder-select:hover {
+          background: #e9ecef;
+        }
+
+        .btn-folder-select:active {
+          transform: translateY(0);
+        }
+
+        .btn-folder-select i {
+          font-size: 0.9rem;
+        }
+
         .form-actions {
           display: flex;
           gap: 1rem;
@@ -211,6 +389,37 @@ const DetailPage = () => {
         .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(31, 30, 122, 0.3);
+        }
+
+        .btn-primary:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn-primary:disabled:hover {
+          transform: none;
+          box-shadow: none;
+        }
+
+        .save-status {
+          margin-top: 1rem;
+          padding: 0.75rem;
+          border-radius: 8px;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .save-status.success {
+          background-color: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+        }
+
+        .save-status.error {
+          background-color: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
         }
 
         .btn-secondary {
@@ -265,6 +474,25 @@ const DetailPage = () => {
           
           .detail-page {
             padding: 1rem;
+          }
+
+          .input-with-button {
+            flex-direction: column;
+          }
+
+          .input-with-button .form-input {
+            border-radius: 8px;
+            border-right: 2px solid #e1e5e9;
+          }
+
+          .input-with-button .form-input:focus {
+            border-right: 2px solid #1f1e7a;
+          }
+
+          .btn-folder-select {
+            border-radius: 8px;
+            border: 2px solid #e1e5e9;
+            justify-content: center;
           }
         }
       `}</style>

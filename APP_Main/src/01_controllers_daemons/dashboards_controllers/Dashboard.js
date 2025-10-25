@@ -10,16 +10,12 @@ import {
 } from './Overview';
 
 import {
-  ProjectsPage,
-  Project3,
-  Project4,
-  Project5,
-  Project6,
-  ProjectsSubPage1,
-  TasksPage,
+  Sources
+} from './Management';
+import {
   TeamPage,
   AdminsPage
-} from './Projects';
+} from './People';
 
 import {
   SettingsPage,
@@ -27,6 +23,10 @@ import {
   SettingsPreferences,
   SettingsSecurity
 } from './Settings';
+
+import {
+  ConsoleAgents
+} from './Console';
 
 
 const Dashboard = ({ onNavigateToWebsite }) => {
@@ -46,6 +46,13 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [dynamicSources, setDynamicSources] = useState([]);
   const [showAddSourceModal, setShowAddSourceModal] = useState(false);
   const [newSourceName, setNewSourceName] = useState('');
+  const [newSourcePath, setNewSourcePath] = useState('');
+  const [newSourceType, setNewSourceType] = useState('file');
+  const [newSourceDescription, setNewSourceDescription] = useState('');
+  const [newSourceEncrypted, setNewSourceEncrypted] = useState(false);
+  const [newSourceBackup, setNewSourceBackup] = useState(true);
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState('');
   const [aiSearchQuery, setAiSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -58,21 +65,80 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   
+  // Console session states
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  
   // Load user sources from data service
   React.useEffect(() => {
-    const sources = dataService.getSources();
-    setDynamicSources(sources);
+    const loadSources = async () => {
+      try {
+        await dataService.waitForInit();
+        const sources = dataService.getSources();
+        // Filter out any null/undefined sources and ensure they have required properties
+        const validSources = sources.filter(source => 
+          source && 
+          source.name && 
+          typeof source.name === 'string'
+        );
+        setDynamicSources(validSources);
+      } catch (error) {
+        console.error('Error loading sources:', error);
+        setDynamicSources([]);
+      }
+    };
+    loadSources();
   }, []);
+
+  // Function to get appropriate icon based on source type
+  const getSourceIcon = (source) => {
+    if (!source || !source.type) return 'fas fa-file';
+    
+    const iconMap = {
+      'log': 'fas fa-file-alt',
+      'data': 'fas fa-database',
+      'code': 'fas fa-code',
+      'text': 'fas fa-file-text',
+      'json': 'fas fa-file-code',
+      'csv': 'fas fa-file-csv',
+      'xml': 'fas fa-file-code',
+      'pdf': 'fas fa-file-pdf',
+      'image': 'fas fa-file-image',
+      'video': 'fas fa-file-video',
+      'audio': 'fas fa-file-audio',
+      'archive': 'fas fa-file-archive',
+      'spreadsheet': 'fas fa-file-excel',
+      'document': 'fas fa-file-word',
+      'presentation': 'fas fa-file-powerpoint',
+      'default': 'fas fa-file'
+    };
+    
+    return iconMap[source.type] || iconMap.default;
+  };
 
   // Listen for storage changes to update sources list
   React.useEffect(() => {
-    const handleStorageChange = () => {
-      const sources = dataService.getSources();
-      setDynamicSources(sources);
+    const handleStorageChange = async () => {
+      try {
+        await dataService.waitForInit();
+        const sources = dataService.getSources();
+        // Filter out any null/undefined sources and ensure they have required properties
+        const validSources = sources.filter(source => 
+          source && 
+          source.name && 
+          typeof source.name === 'string'
+        );
+        setDynamicSources(validSources);
+      } catch (error) {
+        console.error('Error handling storage change:', error);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('sourcesUpdated', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('sourcesUpdated', handleStorageChange);
+    };
   }, []);
 
   const stats = [
@@ -100,17 +166,17 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // Function to generate projects sub-sections with dynamic sources
   const generateProjectsSubSections = () => {
     const baseProjects = [
-      { id: 'main_log', name: 'main_log.txt', icon: 'fas fa-file-alt' },
-      { id: 'project3', name: 'Code Debugger', icon: 'fas fa-bug' }
     ];
     
-    // Add dynamic sources
-    const dynamicSourceItems = dynamicSources.map((source, index) => ({
-      id: `source_${index}`,
-      name: source.name,
-      icon: 'fas fa-file-code',
-      isDynamic: true
-    }));
+    // Add dynamic sources - filter out null/undefined sources and add null checks
+    const dynamicSourceItems = dynamicSources
+      .filter(source => source && source.name) // Filter out null/undefined sources
+      .map((source, index) => ({
+        id: `source_${index}`,
+        name: source.name,
+        icon: 'fas fa-file-code',
+        isDynamic: true
+      }));
     
     return [...baseProjects, ...dynamicSourceItems];
   };
@@ -155,24 +221,86 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     }
   };
 
+  // Form validation
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!newSourceName.trim()) {
+      errors.name = 'Source name is required';
+    } else if (newSourceName.trim().length < 3) {
+      errors.name = 'Source name must be at least 3 characters';
+    } else if (newSourceName.trim().length > 50) {
+      errors.name = 'Source name must be less than 50 characters';
+    }
+    
+    if (!newSourcePath.trim()) {
+      errors.path = 'Source path is required';
+    } else if (newSourcePath.trim().length < 3) {
+      errors.path = 'Source path must be at least 3 characters';
+    }
+    
+    if (newSourceDescription.trim().length > 200) {
+      errors.description = 'Description must be less than 200 characters';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   // Handle adding new source
-  const handleAddSource = () => {
-    if (newSourceName.trim()) {
+  const handleAddSource = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
       const newSource = dataService.addSource({
-        name: newSourceName.trim()
+        name: newSourceName.trim(),
+        path: newSourcePath.trim(),
+        type: newSourceType,
+        description: newSourceDescription.trim(),
+        settings: {
+          encrypted: newSourceEncrypted,
+          backup: newSourceBackup
+        }
       });
       
-      setDynamicSources(prev => [...prev, newSource]);
-      
-      setNewSourceName('');
-      setShowAddSourceModal(false);
+      if (newSource) {
+        setDynamicSources(prev => [...prev, newSource]);
+        // Reset all form fields
+        setNewSourceName('');
+        setNewSourcePath('');
+        setNewSourceType('file');
+        setNewSourceDescription('');
+        setNewSourceEncrypted(false);
+        setNewSourceBackup(true);
+        setFormErrors({});
+        setShowAddSourceModal(false);
+      } else {
+        setFormErrors({ submit: 'Failed to add source. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Error adding source:', error);
+      setFormErrors({ submit: 'An error occurred while adding the source.' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Handle modal close
   const handleCloseModal = () => {
     setShowAddSourceModal(false);
+    // Reset all form fields
     setNewSourceName('');
+    setNewSourcePath('');
+    setNewSourceType('file');
+    setNewSourceDescription('');
+    setNewSourceEncrypted(false);
+    setNewSourceBackup(true);
+    setFormErrors({});
+    setIsSubmitting(false);
   };
 
   const parseCSV = (text) => {
@@ -259,6 +387,19 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     }
   };
 
+  // Console session control functions
+  const handleStartStopSession = () => {
+    setIsSessionActive(!isSessionActive);
+  };
+
+  const handleRestartSession = () => {
+    setIsSessionActive(false);
+    // Add a small delay to show the restart effect
+    setTimeout(() => {
+      setIsSessionActive(true);
+    }, 500);
+  };
+
   const renderPage = () => {
     switch (activeSection) {
       case 'overview':
@@ -274,28 +415,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
             return <DetailPage />;
         }
       case 'projects':
-        // Handle projects subpages
-        if (activeSubSection === 'main_log') {
-          return <Project5 />;
-        } else if (activeSubSection === 'project3') {
-          return <Project3 />;
-        } else if (activeSubSection.startsWith('source_')) {
-          const sourceIndex = parseInt(activeSubSection.replace('source_', ''));
-          const source = dynamicSources[sourceIndex];
-          return (
-            <div className="source-section">
-              <h2>{source?.name || 'Source'}</h2>
-              <div className="source-content">
-                <p>Source content will be displayed here.</p>
-                <div className="source-info">
-                  <p><strong>Name:</strong> {source?.name}</p>
-                  <p><strong>Created:</strong> {source?.createdAt ? new Date(source.createdAt).toLocaleString() : 'Unknown'}</p>
-                </div>
-              </div>
-            </div>
-          );
-        }
-        return <Project5 />;
+        return <Sources />;
       case 'settings':
         // Handle settings subpages
         switch (activeSubSection) {
@@ -312,257 +432,9 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         // Handle console subpages
         switch (activeSubSection) {
           case 'connect':
-            return <div className="console-section">
-              <div className="console-header">
-                <div className="console-title">
-                  <i className="fas fa-terminal"></i>
-                  <h2>Agents Console</h2>
-                </div>
-                <div className="console-status">
-                  <div className="status-indicator online">
-                    <div className="status-dot"></div>
-                    <span>Connected</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="console-grid">
-                <div className="console-main">
-                  <div className="terminal-window">
-                    <div className="terminal-header">
-                      <div className="terminal-controls">
-                        <div className="control-btn close"></div>
-                        <div className="control-btn minimize"></div>
-                        <div className="control-btn maximize"></div>
-                      </div>
-                      <div className="terminal-title">Zenarth Console</div>
-                    </div>
-                    <div className="terminal-body">
-                      <div className="terminal-content">
-                        <div className="terminal-line">
-                          <span className="prompt">user@zenarth.ai</span>
-                          <span className="separator">:</span>
-                          <span className="path">~/console</span>
-                          <span className="separator">$</span>
-                          <span className="command">welcome</span>
-                        </div>
-                        <div className="terminal-output">
-                          <div className="output-line">Welcome to Zenarth Console</div>
-                          <div className="output-line">Console connection interface will be implemented here.</div>
-                          <div className="output-line">Type 'help' for available commands</div>
-                        </div>
-                        <div className="terminal-line current">
-                          <span className="prompt">user@zenarth.ai</span>
-                          <span className="separator">:</span>
-                          <span className="path">~/console</span>
-                          <span className="separator">$</span>
-                          <span className="cursor">_</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="console-sidebar">
-                  {/* Quick Actions Panel - Top */}
-                  <div className="quick-actions-panel">
-                    <h3>Quick Actions</h3>
-                    <div className="actions-list">
-                      <button className="action-btn">
-                        <i className="fas fa-play"></i>
-                        <span>Start Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-stop"></i>
-                        <span>Stop Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-history"></i>
-                        <span>View History</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-cog"></i>
-                        <span>Settings</span>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Agents Panel - Bottom */}
-                  <div className="agents-panel">
-                    <h3>Available Agents</h3>
-                    <div className="agents-list">
-                      {/* Default System Agents */}
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-robot"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">AI Assistant</div>
-                          <div className="agent-status online">Online</div>
-                        </div>
-                      </div>
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-code"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">Code Analyzer</div>
-                          <div className="agent-status online">Online</div>
-                        </div>
-                      </div>
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-database"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">Data Processor</div>
-                          <div className="agent-status offline">Offline</div>
-                        </div>
-                      </div>
-                      
-                      {/* Dynamic Sources as Agents */}
-                      {dynamicSources.map((source, index) => (
-                        <div key={`source-${index}`} className="agent-item source-agent">
-                          <div className="agent-icon">
-                            <i className="fas fa-file"></i>
-                          </div>
-                          <div className="agent-info">
-                            <div className="agent-name">{source.name || `Source ${index + 1}`}</div>
-                            <div className="agent-status online">Available</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>;
+            return <ConsoleAgents />;
           default:
-            return <div className="console-section">
-              <div className="console-header">
-                <div className="console-title">
-                  <i className="fas fa-terminal"></i>
-                  <h2>Agents Console</h2>
-                </div>
-                <div className="console-status">
-                  <div className="status-indicator online">
-                    <div className="status-dot"></div>
-                    <span>Connected</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="console-grid">
-                <div className="console-main">
-                  <div className="terminal-window">
-                    <div className="terminal-header">
-                      <div className="terminal-controls">
-                        <div className="control-btn close"></div>
-                        <div className="control-btn minimize"></div>
-                        <div className="control-btn maximize"></div>
-                      </div>
-                      <div className="terminal-title">Zenarth Console</div>
-                    </div>
-                    <div className="terminal-body">
-                      <div className="terminal-content">
-                        <div className="terminal-line">
-                          <span className="prompt">user@zenarth.ai</span>
-                          <span className="separator">:</span>
-                          <span className="path">~/console</span>
-                          <span className="separator">$</span>
-                          <span className="command">welcome</span>
-                        </div>
-                        <div className="terminal-output">
-                          <div className="output-line">Welcome to Zenarth Console</div>
-                          <div className="output-line">Console connection interface will be implemented here.</div>
-                          <div className="output-line">Type 'help' for available commands</div>
-                        </div>
-                        <div className="terminal-line current">
-                          <span className="prompt">user@zenarth.ai</span>
-                          <span className="separator">:</span>
-                          <span className="path">~/console</span>
-                          <span className="separator">$</span>
-                          <span className="cursor">_</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="console-sidebar">
-                  {/* Quick Actions Panel - Top */}
-                  <div className="quick-actions-panel">
-                    <h3>Quick Actions</h3>
-                    <div className="actions-list">
-                      <button className="action-btn">
-                        <i className="fas fa-play"></i>
-                        <span>Start Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-stop"></i>
-                        <span>Stop Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-history"></i>
-                        <span>View History</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-cog"></i>
-                        <span>Settings</span>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Agents Panel - Bottom */}
-                  <div className="agents-panel">
-                    <h3>Available Agents</h3>
-                    <div className="agents-list">
-                      {/* Default System Agents */}
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-robot"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">AI Assistant</div>
-                          <div className="agent-status online">Online</div>
-                        </div>
-                      </div>
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-code"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">Code Analyzer</div>
-                          <div className="agent-status online">Online</div>
-                        </div>
-                      </div>
-                      <div className="agent-item">
-                        <div className="agent-icon">
-                          <i className="fas fa-database"></i>
-                        </div>
-                        <div className="agent-info">
-                          <div className="agent-name">Data Processor</div>
-                          <div className="agent-status offline">Offline</div>
-                        </div>
-                      </div>
-                      
-                      {/* Dynamic Sources as Agents */}
-                      {dynamicSources.map((source, index) => (
-                        <div key={`source-${index}`} className="agent-item source-agent">
-                          <div className="agent-icon">
-                            <i className="fas fa-file"></i>
-                          </div>
-                          <div className="agent-info">
-                            <div className="agent-name">{source.name || `Source ${index + 1}`}</div>
-                            <div className="agent-status online">Available</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>;
+            return <ConsoleAgents />;
         }
       case 'people':
         // Handle people subpages
@@ -634,30 +506,141 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       {/* Add Source Modal */}
       {showAddSourceModal && (
         <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Add New Source</h3>
-              <button className="modal-close" onClick={handleCloseModal}>
+          <div className="modal-content modern-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header modern-header">
+              <div className="header-content">
+                <div className="header-icon">
+                  <i className="fas fa-plus-circle"></i>
+                </div>
+                <div className="header-text">
+                  <h3>Add New Source</h3>
+                  <p>Configure a new data source for your project</p>
+                </div>
+              </div>
+              <button className="modal-close modern-close" onClick={handleCloseModal}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
-            <div className="modal-body">
-              <label htmlFor="sourceName">Source Name:</label>
-              <input
-                id="sourceName"
-                type="text"
-                value={newSourceName}
-                onChange={(e) => setNewSourceName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddSource()}
-                placeholder="Enter source name..."
-                autoFocus
-              />
+            <div className="modal-body modern-body">
+              <div className="form-section">
+                <div className="form-group modern-group">
+                  <label htmlFor="sourceName" className="modern-label">
+                    <i className="fas fa-tag"></i>
+                    Source Name
+                  </label>
+                  <input
+                    id="sourceName"
+                    type="text"
+                    value={newSourceName}
+                    onChange={(e) => setNewSourceName(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddSource()}
+                    placeholder="Enter a descriptive name for your source..."
+                    className="modern-input"
+                    autoFocus
+                  />
+                  {newSourceName && (
+                    <div className="input-hint">
+                      <i className="fas fa-check-circle"></i>
+                      Source name is valid
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group modern-group">
+                  <label htmlFor="sourcePath" className="modern-label">
+                    <i className="fas fa-folder-open"></i>
+                    Path *
+                  </label>
+                  <input
+                    id="sourcePath"
+                    type="text"
+                    value={newSourcePath}
+                    onChange={(e) => setNewSourcePath(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddSource()}
+                    placeholder="Enter file path or URL..."
+                    className="modern-input"
+                  />
+                  {newSourcePath && (
+                    <div className="input-hint">
+                      <i className="fas fa-check-circle"></i>
+                      Path is valid
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group modern-group">
+                  <label htmlFor="sourceType" className="modern-label">
+                    <i className="fas fa-cog"></i>
+                    Source Type
+                  </label>
+                  <select
+                    id="sourceType"
+                    value={newSourceType}
+                    onChange={(e) => setNewSourceType(e.target.value)}
+                    className="modern-select"
+                  >
+                    <option value="file">File Upload</option>
+                    <option value="database">Database Connection</option>
+                    <option value="api">API Endpoint</option>
+                    <option value="stream">Data Stream</option>
+                    <option value="manual">Manual Entry</option>
+                  </select>
+                </div>
+
+                <div className="form-group modern-group">
+                  <label htmlFor="sourceDescription" className="modern-label">
+                    <i className="fas fa-align-left"></i>
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    id="sourceDescription"
+                    value={newSourceDescription}
+                    onChange={(e) => setNewSourceDescription(e.target.value)}
+                    placeholder="Describe what this source contains and how it will be used..."
+                    className="modern-textarea"
+                    rows="3"
+                  />
+                </div>
+
+                <div className="form-group modern-group">
+                  <label className="modern-label">
+                    <i className="fas fa-shield-alt"></i>
+                    Security Settings
+                  </label>
+                  <div className="checkbox-group">
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={newSourceEncrypted}
+                        onChange={(e) => setNewSourceEncrypted(e.target.checked)}
+                      />
+                      <span className="checkmark"></span>
+                      <span className="checkbox-text">Encrypt sensitive data</span>
+                    </label>
+                    <label className="checkbox-item">
+                      <input
+                        type="checkbox"
+                        checked={newSourceBackup}
+                        onChange={(e) => setNewSourceBackup(e.target.checked)}
+                      />
+                      <span className="checkmark"></span>
+                      <span className="checkbox-text">Enable automatic backup</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn-cancel" onClick={handleCloseModal}>
+            <div className="modal-footer modern-footer">
+              <button className="btn-cancel modern-cancel" onClick={handleCloseModal}>
+                <i className="fas fa-times"></i>
                 Cancel
               </button>
-              <button className="btn-add" onClick={handleAddSource} disabled={!newSourceName.trim()}>
+              <button 
+                className="btn-add modern-add" 
+                onClick={handleAddSource} 
+                disabled={!newSourceName.trim() || !newSourcePath.trim()}
+              >
+                <i className="fas fa-plus"></i>
                 Add Source
               </button>
             </div>
@@ -768,7 +751,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .nav-item.active {
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           color: white;
           box-shadow: 0 2px 10px rgba(31, 30, 122, 0.3);
         }
@@ -892,7 +875,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1084,7 +1067,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           color: white;
           border: none;
           padding: 0.75rem 1.5rem;
@@ -1158,7 +1141,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
 
         .progress-fill {
           height: 100%;
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           border-radius: 4px;
           transition: width 0.3s ease;
         }
@@ -1206,8 +1189,18 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .action-btn:last-child {
-          background: rgba(220, 53, 69, 0.1);
-          color: #dc3545;
+          padding: 0.5rem;
+          border: none;
+          background: rgba(31, 30, 122, 0.1);
+          color: #1f1e7a;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .action-btn:last-child:hover {
+          background: rgba(31, 30, 122, 0.2);
+          transform: scale(1.05);
         }
 
         .action-btn:hover {
@@ -1255,7 +1248,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .upload-button {
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           color: white;
           border: none;
           padding: 1rem 2rem;
@@ -1324,7 +1317,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .search-btn {
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
+          background: #1f1e7a;
           color: white;
           border: none;
           padding: 0.75rem 1.5rem;
@@ -1670,33 +1663,10 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .terminal-header {
           display: flex;
           align-items: center;
+          justify-content: center;
           padding: 0.75rem 1rem;
           background: #2d2d2d;
           border-bottom: 1px solid #3d3d3d;
-        }
-
-        .terminal-controls {
-          display: flex;
-          gap: 0.5rem;
-          margin-right: 1rem;
-        }
-
-        .control-btn {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-        }
-
-        .control-btn.close {
-          background: #ff5f57;
-        }
-
-        .control-btn.minimize {
-          background: #ffbd2e;
-        }
-
-        .control-btn.maximize {
-          background: #28ca42;
         }
 
         .terminal-title {
@@ -1815,7 +1785,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           width: 40px;
           height: 40px;
           border-radius: 8px;
-          background: linear-gradient(135deg, #1f1e7a, #3b82f6);
+          background: #1f1e7a;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1886,11 +1856,22 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .action-btn:hover {
-          background: #1f1e7a;
+           background: #1f1e7a;
           color: white;
           border-color: #1f1e7a;
           transform: translateY(-1px);
           box-shadow: 0 2px 8px rgba(31, 30, 122, 0.2);
+        }
+
+        .action-btn.active {
+           background: #1f1e7a;
+          color: white;
+          border-color: #1f1e7a;
+        }
+
+        .action-btn.active:hover {
+          background: #dc2626;
+          border-color: #dc2626;
         }
 
         .action-btn i {
@@ -1918,6 +1899,346 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           
           .terminal-content {
             font-size: 0.8rem;
+          }
+        }
+
+        /* Modern Modal Styles */
+        .modern-modal {
+          max-width: 600px;
+          width: 95%;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+          animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+         .modern-header {
+           background: #1f1e7a;
+           color: white;
+           padding: 1.5rem 2rem;
+           border-radius: 16px 16px 0 0;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+         }
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .header-icon {
+          width: 50px;
+          height: 50px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+        }
+
+        .header-text h3 {
+          margin: 0;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .header-text p {
+          margin: 0.25rem 0 0 0;
+          opacity: 0.9;
+          font-size: 0.9rem;
+        }
+
+        .modern-close {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 1.1rem;
+        }
+
+        .modern-close:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.05);
+        }
+
+        .modern-body {
+          padding: 2rem;
+          background: #fafbfc;
+        }
+
+        .form-section {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .modern-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .modern-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: #374151;
+          font-size: 0.95rem;
+        }
+
+         .modern-label i {
+           color: #1f1e7a;
+           width: 16px;
+         }
+
+        .modern-input, .modern-select, .modern-textarea {
+          padding: 0.875rem 1rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+          background: white;
+        }
+
+        .modern-input:focus, .modern-select:focus, .modern-textarea:focus {
+          outline: none;
+          border-color: #1f1e7a;
+          box-shadow: 0 0 0 3px rgba(31, 30, 122, 0.1);
+        }
+
+        .modern-input.error, .modern-textarea.error {
+          border-color: #dc2626;
+          box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .modern-input.success {
+          border-color: #10b981;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .modern-textarea {
+          resize: vertical;
+          min-height: 80px;
+          font-family: inherit;
+        }
+
+        .input-hint {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #10b981;
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
+
+        .input-hint i {
+          font-size: 0.9rem;
+        }
+
+        .required {
+          color: #dc2626;
+          margin-left: 0.25rem;
+        }
+
+        .char-count {
+          margin-left: auto;
+          font-size: 0.8rem;
+          color: #6b7280;
+          font-weight: 500;
+        }
+
+        .error-message {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #dc2626;
+          font-size: 0.85rem;
+          font-weight: 500;
+          margin-top: 0.25rem;
+        }
+
+        .error-message i {
+          font-size: 0.9rem;
+        }
+
+        .submit-error {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #dc2626;
+          background: rgba(220, 38, 38, 0.1);
+          border: 1px solid rgba(220, 38, 38, 0.2);
+          padding: 0.75rem 1rem;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          font-weight: 500;
+          margin-bottom: 1rem;
+        }
+
+        .submit-error i {
+          font-size: 1rem;
+        }
+
+        .footer-buttons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .checkbox-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          padding: 0.75rem;
+          border-radius: 8px;
+          transition: background-color 0.3s ease;
+        }
+
+         .checkbox-item:hover {
+           background: rgba(31, 30, 122, 0.05);
+         }
+
+        .checkbox-item input[type="checkbox"] {
+          display: none;
+        }
+
+        .checkmark {
+          width: 20px;
+          height: 20px;
+          border: 2px solid #d1d5db;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + .checkmark {
+           background: #1f1e7a;
+           border-color: #1f1e7a;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + .checkmark::after {
+          content: '✓';
+          color: white;
+          font-size: 0.8rem;
+          font-weight: bold;
+        }
+
+        .checkbox-text {
+          font-weight: 500;
+          color: #374151;
+        }
+
+        .modern-footer {
+          padding: 1.5rem 2rem;
+          background: white;
+          border-top: 1px solid #e5e7eb;
+          border-radius: 0 0 16px 16px;
+          display: flex;
+          justify-content: flex-end;
+          gap: 1rem;
+        }
+
+        .modern-cancel, .modern-add {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: none;
+        }
+
+        .modern-cancel {
+          background: #f3f4f6;
+          color: #6b7280;
+          border: 1px solid #d1d5db;
+        }
+
+        .modern-cancel:hover {
+          background: #e5e7eb;
+          color: #374151;
+          transform: translateY(-1px);
+        }
+
+         .modern-add {
+           background: #1f1e7a;
+           color: white;
+           box-shadow: 0 4px 15px rgba(31, 30, 122, 0.3);
+         }
+
+        .modern-add:hover:not(:disabled) {
+          transform: translateY(-2px);
+           box-shadow: 0 6px 20px rgba(31, 30, 122, 0.4);
+        }
+
+        .modern-add:disabled {
+          background: #d1d5db;
+          color: #9ca3af;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+
+        @media (max-width: 768px) {
+          .modern-modal {
+            width: 98%;
+            margin: 1rem;
+          }
+          
+          .modern-header {
+            padding: 1rem 1.5rem;
+          }
+          
+          .modern-body {
+            padding: 1.5rem;
+          }
+          
+          .modern-footer {
+            padding: 1rem 1.5rem;
+          }
+          
+          .footer-buttons {
+            flex-direction: column;
+          }
+          
+          .modern-cancel, .modern-add {
+            width: 100%;
+            justify-content: center;
           }
         }
 

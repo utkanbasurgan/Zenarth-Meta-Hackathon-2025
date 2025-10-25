@@ -1,0 +1,227 @@
+{
+  "sourcesData": {
+    "componentInfo": {
+      "name": "Project5",
+      "type": "React Component",
+      "file": "Sources.js",
+      "description": "Error monitoring and management dashboard component"
+    },
+    "stateData": {
+      "selectedError": null,
+      "timeUntilNextCheck": 10,
+      "showPreviewModal": false,
+      "logContent": "",
+      "loadingLog": false
+    },
+    "systemStatus": {
+      "overallStatus": "healthy",
+      "message": "There are no errors in system.",
+      "nextCheckIn": "10s",
+      "checkInterval": 10
+    },
+    "errorCategories": {
+      "handledErrors": {
+        "count": 12,
+        "status": "AUTO_FIXED",
+        "errors": [
+          {
+            "time": "14.32",
+            "type": "SYNTAX_ERROR",
+            "description": "Missing semicolon in line 247 of main.js",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI detected a missing semicolon at the end of line 247 in the main.js file. This was automatically fixed by adding the semicolon. The fix was applied immediately and the code compiled successfully.",
+            "solution": "Added semicolon (;) at the end of line 247",
+            "impact": "Low - Syntax error prevented compilation",
+            "resolutionTime": "0.2 seconds"
+          },
+          {
+            "time": "14.28",
+            "type": "TYPE_ERROR",
+            "description": "Undefined variable 'userData' in component",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI identified an undefined variable 'userData' being used in a React component. The variable was properly declared and initialized with default values.",
+            "solution": "Added const userData = {}; declaration with proper initialization",
+            "impact": "Medium - Runtime error prevented",
+            "resolutionTime": "0.5 seconds"
+          },
+          {
+            "time": "14.25",
+            "type": "IMPORT_ERROR",
+            "description": "Module 'react-router' not found",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI detected a missing dependency for react-router. The package was automatically installed and the import statement was corrected.",
+            "solution": "Installed react-router-dom package and updated import statement",
+            "impact": "High - Build failure prevented",
+            "resolutionTime": "2.1 seconds"
+          },
+          {
+            "time": "14.22",
+            "type": "LOGIC_ERROR",
+            "description": "Infinite loop in data processing function",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI identified an infinite loop in the data processing function caused by incorrect loop conditions. The loop was fixed with proper termination conditions.",
+            "solution": "Added proper loop termination condition and break statement",
+            "impact": "Critical - Infinite loop prevented",
+            "resolutionTime": "1.8 seconds"
+          },
+          {
+            "time": "14.19",
+            "type": "PERFORMANCE_ERROR",
+            "description": "Memory leak in event listeners",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI detected memory leaks caused by event listeners not being properly cleaned up. The cleanup functions were automatically added.",
+            "solution": "Added useEffect cleanup function to remove event listeners",
+            "impact": "Medium - Memory leak prevented",
+            "resolutionTime": "1.2 seconds"
+          },
+          {
+            "time": "14.15",
+            "type": "VALIDATION_ERROR",
+            "description": "Invalid email format validation",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI identified incorrect email validation regex pattern. The pattern was updated to properly validate email addresses.",
+            "solution": "Updated email validation regex pattern",
+            "impact": "Low - Form validation improved",
+            "resolutionTime": "0.3 seconds"
+          },
+          {
+            "time": "14.12",
+            "type": "ASYNC_ERROR",
+            "description": "Unhandled promise rejection in API call",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI detected an unhandled promise rejection in an API call. Proper error handling with try-catch blocks was automatically added.",
+            "solution": "Added try-catch block and proper error handling",
+            "impact": "Medium - Runtime error prevented",
+            "resolutionTime": "0.8 seconds"
+          },
+          {
+            "time": "14.08",
+            "type": "RENDER_ERROR",
+            "description": "Component render method returning null",
+            "status": "AUTO_FIXED",
+            "category": "handled",
+            "details": "The AI identified a React component render method that was returning null inappropriately. The component was fixed to return proper JSX.",
+            "solution": "Fixed component render method to return proper JSX element",
+            "impact": "Medium - Component rendering fixed",
+            "resolutionTime": "0.6 seconds"
+          }
+        ]
+      },
+      "coveredErrors": {
+        "count": 8,
+        "status": "MAINTENANCE_MODE",
+        "errors": [
+          {
+            "time": "13.58",
+            "type": "DATABASE_ERROR",
+            "description": "Connection timeout to main database",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.54",
+            "type": "API_ERROR",
+            "description": "Third-party service unavailable",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.49",
+            "type": "AUTH_ERROR",
+            "description": "OAuth provider service down",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.45",
+            "type": "FILE_ERROR",
+            "description": "File system permissions issue",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.41",
+            "type": "NETWORK_ERROR",
+            "description": "CDN service temporarily unavailable",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.37",
+            "type": "CONFIG_ERROR",
+            "description": "Environment variables misconfigured",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.33",
+            "type": "DEPENDENCY_ERROR",
+            "description": "Package version conflict detected",
+            "status": "MAINTENANCE_MODE"
+          },
+          {
+            "time": "13.29",
+            "type": "RESOURCE_ERROR",
+            "description": "Server resources temporarily exhausted",
+            "status": "MAINTENANCE_MODE"
+          }
+        ]
+      },
+      "criticalErrors": {
+        "count": 3,
+        "status": "REQUIRES_MANUAL",
+        "errors": [
+          {
+            "time": "13.15",
+            "type": "SYSTEM_CRASH",
+            "description": "Core application process terminated unexpectedly",
+            "status": "REQUIRES_MANUAL"
+          },
+          {
+            "time": "13.08",
+            "type": "SECURITY_BREACH",
+            "description": "Unauthorized access attempt detected",
+            "status": "REQUIRES_MANUAL"
+          },
+          {
+            "time": "13.02",
+            "type": "DATA_CORRUPTION",
+            "description": "Critical data integrity violation",
+            "status": "REQUIRES_MANUAL"
+          }
+        ]
+      }
+    },
+    "componentFeatures": {
+      "errorHandling": {
+        "autoFix": true,
+        "manualIntervention": true,
+        "maintenanceMode": true
+      },
+      "monitoring": {
+        "realTimeStatus": true,
+        "progressTracking": true,
+        "logPreview": true
+      },
+      "uiComponents": [
+        "StatusDisplay",
+        "ErrorBoxes",
+        "ErrorDetailsPopup",
+        "PreviewLogModal"
+      ]
+    },
+    "apiEndpoints": {
+      "logFetch": "/api/logs/main-log.txt",
+      "errorDetails": "ErrorDetailsPopup component"
+    },
+    "metadata": {
+      "extractedAt": "2025-01-27",
+      "sourceFile": "Sources.js",
+      "totalErrors": 23,
+      "handledErrors": 12,
+      "coveredErrors": 8,
+      "criticalErrors": 3
+    }
+  }
+}

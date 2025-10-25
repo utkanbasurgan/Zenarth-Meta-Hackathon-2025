@@ -134,6 +134,130 @@ app.post('/api/run-python-command', async (req, res) => {
   }
 });
 
+// Data persistence endpoints
+const dataDir = path.join(__dirname, '../../03_datas_daemons');
+
+// Ensure data directory exists
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+// Get projects data
+app.get('/api/data/projects', (req, res) => {
+  try {
+    const filePath = path.join(dataDir, 'projects_dats.json');
+    if (fs.existsSync(filePath)) {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      res.json(data);
+    } else {
+      // Return default structure if file doesn't exist
+      const defaultData = {
+        projects: [],
+        sources: [],
+        uploadedFiles: [],
+        projectDetails: {
+          name: '',
+          location: '',
+          build: 'React'
+        },
+        lastUpdated: new Date().toISOString()
+      };
+      res.json(defaultData);
+    }
+  } catch (error) {
+    console.error('Error reading projects data:', error);
+    res.status(500).json({ error: 'Failed to read projects data' });
+  }
+});
+
+// Save projects data
+app.post('/api/data/projects', (req, res) => {
+  try {
+    const filePath = path.join(dataDir, 'projects_dats.json');
+    const data = {
+      ...req.body,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    res.json({ success: true, message: 'Projects data saved successfully' });
+  } catch (error) {
+    console.error('Error saving projects data:', error);
+    res.status(500).json({ error: 'Failed to save projects data' });
+  }
+});
+
+// Get sources data
+app.get('/api/data/sources', (req, res) => {
+  try {
+    const filePath = path.join(dataDir, 'sources.json');
+    if (fs.existsSync(filePath)) {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      res.json(data);
+    } else {
+      // Return default sources structure
+      const defaultData = {
+        sources: [],
+        lastUpdated: new Date().toISOString()
+      };
+      res.json(defaultData);
+    }
+  } catch (error) {
+    console.error('Error reading sources data:', error);
+    res.status(500).json({ error: 'Failed to read sources data' });
+  }
+});
+
+// Save sources data
+app.post('/api/data/sources', (req, res) => {
+  try {
+    const filePath = path.join(dataDir, 'sources.json');
+    const data = {
+      ...req.body,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    res.json({ success: true, message: 'Sources data saved successfully' });
+  } catch (error) {
+    console.error('Error saving sources data:', error);
+    res.status(500).json({ error: 'Failed to save sources data' });
+  }
+});
+
+// Update project details
+app.put('/api/data/project-details', (req, res) => {
+  try {
+    const filePath = path.join(dataDir, 'projects_dats.json');
+    let data;
+    
+    if (fs.existsSync(filePath)) {
+      data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } else {
+      data = {
+        projects: [],
+        sources: [],
+        uploadedFiles: [],
+        projectDetails: {
+          name: '',
+          location: '',
+          build: 'React'
+        },
+        lastUpdated: new Date().toISOString()
+      };
+    }
+    
+    data.projectDetails = { ...data.projectDetails, ...req.body };
+    data.lastUpdated = new Date().toISOString();
+    
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    res.json({ success: true, message: 'Project details updated successfully' });
+  } catch (error) {
+    console.error('Error updating project details:', error);
+    res.status(500).json({ error: 'Failed to update project details' });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 

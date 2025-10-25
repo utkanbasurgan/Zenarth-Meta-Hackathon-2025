@@ -1,8 +1,11 @@
 // Overview exports
 export * from '../Overview';
 
-// Projects exports
-export * from '../Projects';
+// Management exports
+export * from '../Management';
+
+// People exports
+export * from '../People';
 
 // Settings exports
 export * from '../Settings';

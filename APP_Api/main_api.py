@@ -4,8 +4,9 @@ from python_api import *
 # -----------------------------
 # Örnek kullanım
 # -----------------------------
+
 if __name__ == "__main__":
-    # Command line argument parsing
+
     parser = argparse.ArgumentParser(description='Send prompt to LLM via SSH')
     parser.add_argument('prompt', help='The prompt to send to the LLM')
     parser.add_argument('--model', default='llama3.1:8b', help='Model to use (default: llama3.1:8b)')
@@ -19,8 +20,7 @@ if __name__ == "__main__":
     PORT = 31103
     USER = "root"
 
-    # DİKKAT: gerçek dosya yollarını yaz
-    KEY_PATH = "./llama_ssh.txt"  # PEM/KEY dosyanın gerçek adı/uzantısı
+    KEY_PATH = "./llama_ssh.txt"
     PASSFILE_PATH = "./passphrase.txt"
 
     ssh = connect_ssh(HOST, PORT, USER, KEY_PATH, PASSFILE_PATH)

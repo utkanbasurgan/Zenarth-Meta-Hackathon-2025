@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 const ErrorDetailsPopup = ({ error, onClose }) => {
-  const [activeTab, setActiveTab] = useState('details');
   const [selectedLine, setSelectedLine] = useState(null);
 
   // Dummy code for left panel (Before/Original)
@@ -248,85 +247,64 @@ export default UserProfile;`;
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="popup-tabs">
-          <button 
-            className={`tab ${activeTab === 'details' ? 'active' : ''}`}
-            onClick={() => setActiveTab('details')}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
-            Details
-          </button>
-          <button 
-            className={`tab ${activeTab === 'code' ? 'active' : ''}`}
-            onClick={() => setActiveTab('code')}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-            Code Comparison
-          </button>
-        </div>
 
-        {/* Content */}
+        {/* Content - Combined View */}
         <div className="popup-content">
-          {activeTab === 'details' && (
-            <div className="details-content">
-              <div className="error-info-grid">
-                <div className="info-item">
-                  <span className="label">Time:</span>
-                  <span className="value">{error.time}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Type:</span>
-                  <span className="value">{error.type}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Status:</span>
-                  <span className={`value status-${error.category}`}>{error.status}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Impact:</span>
-                  <span className="value">{error.impact}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Resolution Time:</span>
-                  <span className="value">{error.resolutionTime}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">File:</span>
-                  <span className="value">UserProfile.js</span>
-                </div>
+          <div className="combined-content">
+            {/* Error Details Section */}
+            <div className="details-section">
+              <div className="section-header">
+                <h4>Error Details</h4>
               </div>
-              
-              <div className="error-description">
-                <h4>Description</h4>
-                <p>{error.description}</p>
-              </div>
-              
-              <div className="error-details">
-                <h4>Technical Details</h4>
-                <p>{error.details}</p>
-              </div>
-              
-              <div className="error-solution">
-                <h4>Solution Applied</h4>
-                <p>{error.solution}</p>
+              <div className="details-content">
+                <div className="error-info-grid">
+                  <div className="info-item">
+                    <span className="label">Time:</span>
+                    <span className="value">{error.time}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Type:</span>
+                    <span className="value">{error.type}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Status:</span>
+                    <span className={`value status-${error.category}`}>{error.status}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Impact:</span>
+                    <span className="value">{error.impact}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Resolution Time:</span>
+                    <span className="value">{error.resolutionTime}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">File:</span>
+                    <span className="value">UserProfile.js</span>
+                  </div>
+                </div>
+                
+                <div className="error-description">
+                  <h5>Description</h5>
+                  <p>{error.description}</p>
+                </div>
+                
+                <div className="error-details">
+                  <h5>Technical Details</h5>
+                  <p>{error.details}</p>
+                </div>
+                
+                <div className="error-solution">
+                  <h5>Solution Applied</h5>
+                  <p>{error.solution}</p>
+                </div>
               </div>
             </div>
-          )}
 
-          {activeTab === 'code' && (
-            <div className="code-comparison">
-              <div className="comparison-header">
-                <div className="comparison-title">
-                  <h4>Code Comparison</h4>
-                  <p>Before vs After the fix</p>
-                </div>
+            {/* Code Comparison Section - Before */}
+            <div className="code-comparison-section">
+              <div className="section-header">
+                <h4>Before (Original)</h4>
                 <div className="comparison-actions">
                   <button className="action-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -341,25 +319,39 @@ export default UserProfile;`;
               
               <div className="code-viewer-container">
                 {renderCodeViewer(originalCode, "UserProfile.js (Before)", true)}
+              </div>
+            </div>
+
+            {/* Code Comparison Section - After */}
+            <div className="code-comparison-section">
+              <div className="section-header">
+                <h4>After (Fixed)</h4>
+                <div className="comparison-actions">
+                  <button className="action-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                  </button>
+                </div>
+              </div>
+              
+              <div className="code-viewer-container">
                 {renderCodeViewer(fixedCode, "UserProfile.js (After)", false)}
               </div>
               
-              <div className="comparison-summary">
-                <h5>Key Changes:</h5>
-                <ul>
-                  <li>Added <code>isMounted</code> state to prevent memory leaks</li>
-                  <li>Used <code>useCallback</code> for memoized functions</li>
-                  <li>Added proper cleanup in <code>useEffect</code></li>
-                  <li>Improved error handling with status codes</li>
-                  <li>Added loading states and disabled buttons</li>
-                </ul>
-              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
       <style jsx>{`
+        * {
+          box-sizing: border-box;
+        }
+
         .error-popup-overlay {
           position: fixed;
           top: 0;
@@ -385,6 +377,7 @@ export default UserProfile;`;
           flex-direction: column;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
           border: 1px solid #333;
+          box-sizing: border-box;
         }
 
         .popup-header {
@@ -423,7 +416,7 @@ export default UserProfile;`;
         }
 
         .close-btn {
-          background: none;
+          background: #2d2d2d;
           border: none;
           color: #888;
           cursor: pointer;
@@ -437,56 +430,69 @@ export default UserProfile;`;
           color: #fff;
         }
 
-        .popup-tabs {
-          display: flex;
-          background: #252526;
-          border-bottom: 1px solid #444;
-        }
-
-        .tab {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 1rem 1.5rem;
-          background: none;
-          border: none;
-          color: #888;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.2s ease;
-          border-bottom: 2px solid transparent;
-        }
-
-        .tab:hover {
-          color: #fff;
-          background: #2d2d2d;
-        }
-
-        .tab.active {
-          color: #007acc;
-          border-bottom-color: #007acc;
-          background: #1e1e1e;
-        }
 
         .popup-content {
           flex: 1;
           overflow: hidden;
           display: flex;
           flex-direction: column;
+          width: 100%;
+        }
+
+        .combined-content
+        {
+          display: grid;
+          grid-template-columns: 30% 35% 35%;
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          gap: 0;
+          background: #1e1e1e;
+        }
+
+        .details-section,
+        .code-comparison-section {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          border-right: 1px solid #444;
+          width: 100%;
+          box-sizing: border-box;
+          min-width: 0;
+        }
+
+        .code-comparison-section:last-child {
+          border-right: none;
+        }
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 1.5rem;
+          background: #2d2d2d;
+          border-bottom: 1px solid #444;
+        }
+
+        .section-header h4 {
+          margin: 0;
+          color: #fff;
+          font-size: 1.1rem;
+          font-weight: 600;
         }
 
         .details-content {
-          padding: 2rem;
+          padding: 1.5rem;
           overflow-y: auto;
           color: #fff;
+          flex: 1;
         }
 
         .error-info-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1rem;
-          margin-bottom: 2rem;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
         }
 
         .info-item {
@@ -524,15 +530,15 @@ export default UserProfile;`;
         .error-description,
         .error-details,
         .error-solution {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1rem;
         }
 
-        .error-description h4,
-        .error-details h4,
-        .error-solution h4 {
+        .error-description h5,
+        .error-details h5,
+        .error-solution h5 {
           color: #fff;
-          margin: 0 0 0.75rem 0;
-          font-size: 1.1rem;
+          margin: 0 0 0.5rem 0;
+          font-size: 1rem;
           font-weight: 600;
         }
 
@@ -540,37 +546,44 @@ export default UserProfile;`;
         .error-details p,
         .error-solution p {
           color: #ccc;
+          line-height: 1.5;
+          margin: 0;
+          font-size: 0.9rem;
+          padding: 8px 0;
+        }
+
+        /* Additional text padding improvements for popup content */
+        .details-content p,
+        .details-content div,
+        .details-content span {
+          padding: 6px 0;
           line-height: 1.6;
+        }
+
+        .details-content h1,
+        .details-content h2,
+        .details-content h3,
+        .details-content h4,
+        .details-content h5,
+        .details-content h6 {
+          padding: 10px 0 6px 0;
           margin: 0;
         }
 
-        .code-comparison {
+        .details-content ul,
+        .details-content ol {
+          padding: 6px 0 6px 16px;
+        }
+
+        .details-content li {
+          padding: 3px 0;
+        }
+
+        .code-comparison-section {
           flex: 1;
           display: flex;
           flex-direction: column;
           overflow: hidden;
-        }
-
-        .comparison-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem 2rem;
-          background: #2d2d2d;
-          border-bottom: 1px solid #444;
-        }
-
-        .comparison-title h4 {
-          margin: 0;
-          color: #fff;
-          font-size: 1.1rem;
-          font-weight: 600;
-        }
-
-        .comparison-title p {
-          margin: 0.25rem 0 0 0;
-          color: #888;
-          font-size: 0.9rem;
         }
 
         .comparison-actions {
@@ -601,6 +614,9 @@ export default UserProfile;`;
           flex: 1;
           display: flex;
           overflow: hidden;
+          margin: 0;
+          width: 100%;
+          min-width: 0;
         }
 
         .code-panel {
@@ -608,6 +624,15 @@ export default UserProfile;`;
           display: flex;
           flex-direction: column;
           border-right: 1px solid #444;
+          width: 100%;
+          min-width: 0;
+          background: #1e1e1e;
+        }
+
+        /* Ensure both code panels have identical background */
+        .code-panel.left-panel,
+        .code-panel.right-panel {
+          background: #1e1e1e;
         }
 
         .code-panel:last-child {
@@ -642,7 +667,7 @@ export default UserProfile;`;
 
         .code-actions .action-btn {
           padding: 0.25rem;
-          background: none;
+          background: #2d2d2d;
           color: #888;
           border: none;
           cursor: pointer;
@@ -661,6 +686,15 @@ export default UserProfile;`;
           font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
           font-size: 0.85rem;
           line-height: 1.4;
+          width: 100%;
+          min-width: 0;
+          background: #1e1e1e;
+        }
+
+        /* Ensure both code panels have identical background */
+        .code-panel.left-panel .code-content,
+        .code-panel.right-panel .code-content {
+          background: #1e1e1e;
         }
 
         .line-numbers {
@@ -685,6 +719,19 @@ export default UserProfile;`;
           background: #1e1e1e;
           overflow-y: auto;
           padding: 1rem 0;
+          width: 100%;
+          min-width: 0;
+        }
+
+        /* Ensure both code panels have identical background */
+        .code-panel.left-panel .code-lines,
+        .code-panel.right-panel .code-lines {
+          background: #1e1e1e;
+        }
+
+        .code-panel.left-panel .line-numbers,
+        .code-panel.right-panel .line-numbers {
+          background: #1e1e1e;
         }
 
         .code-line {
@@ -694,6 +741,7 @@ export default UserProfile;`;
           display: flex;
           align-items: center;
           min-height: 1.4em;
+          background: #1e1e1e;
         }
 
         .code-line:hover {
@@ -710,7 +758,7 @@ export default UserProfile;`;
         }
 
         .comparison-summary {
-          padding: 1.5rem 2rem;
+          padding: 1rem 1.5rem;
           background: #2d2d2d;
           border-top: 1px solid #444;
         }
@@ -767,6 +815,55 @@ export default UserProfile;`;
         .code-lines::-webkit-scrollbar-thumb:hover,
         .details-content::-webkit-scrollbar-thumb:hover {
           background: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+          .combined-content {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto 1fr;
+          }
+
+          .details-section {
+            border-right: none;
+            border-bottom: 1px solid #444;
+            max-height: 30vh;
+          }
+
+          .code-comparison-section {
+            border-right: none;
+            border-bottom: 1px solid #444;
+            max-height: 35vh;
+          }
+
+          .code-comparison-section:last-child {
+            border-bottom: none;
+            flex: 1;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .error-popup-container {
+            width: 98vw;
+            height: 95vh;
+          }
+
+          .error-info-grid {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+          }
+
+          .section-header {
+            padding: 0.75rem 1rem;
+          }
+
+          .details-content {
+            padding: 1rem;
+          }
+
+          .comparison-summary {
+            padding: 0.75rem 1rem;
+          }
         }
       `}</style>
     </div>

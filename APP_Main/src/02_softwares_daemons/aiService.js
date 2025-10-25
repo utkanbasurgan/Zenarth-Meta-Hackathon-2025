@@ -231,8 +231,7 @@ const sortedData = data.sort((a, b) => {
   return valB.toString().localeCompare(valA.toString());
 });`;
   }
-  
-  // Check for "top N" or "latest N" patterns
+
   const topMatch = queryLower.match(/top\s+(\d+)/);
   const latestMatch = queryLower.match(/latest\s+(\d+)/);
   const limitMatch = queryLower.match(/(\d+)\s+results/);

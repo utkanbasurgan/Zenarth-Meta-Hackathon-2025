@@ -21,7 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ssh-server": "node src/04_settings_daemons/ssh-server.js"
+    "ssh-server": "node src/04_settings_daemons/ssh-server.js",
+    "console-api": "node src/01_controllers_daemons/dashboards_controllers/Console/api-server.js"
   },
   "eslintConfig": {
     "extends": [

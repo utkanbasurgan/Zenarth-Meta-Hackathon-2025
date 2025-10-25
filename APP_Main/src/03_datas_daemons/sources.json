@@ -1,0 +1,71 @@
+{
+  "sources": [
+    {
+      "id": "error_log_txt",
+      "name": "Error Log",
+      "fileName": "error_log.txt",
+      "type": "log",
+      "description": "Application error log file",
+      "settings": {
+        "autoRotate": true,
+        "maxSize": "5MB",
+        "retentionDays": 15,
+        "logLevel": "ERROR",
+        "format": "timestamp|level|message|stack"
+      },
+      "data": "",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUpdated": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "config_json",
+      "name": "Configuration",
+      "fileName": "config.json",
+      "type": "json",
+      "description": "Application configuration file",
+      "settings": {
+        "autoBackup": true,
+        "encryption": false,
+        "version": "1.0"
+      },
+      "data": "",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUpdated": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "database_csv",
+      "name": "Database Export",
+      "fileName": "database_export.csv",
+      "type": "csv",
+      "description": "Database export file",
+      "settings": {
+        "delimiter": ",",
+        "encoding": "utf-8",
+        "headers": true
+      },
+      "data": "",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUpdated": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "code_analyzer",
+      "name": "Code Analyzer",
+      "fileName": "analyzer.py",
+      "type": "code",
+      "description": "Python code analysis tool",
+      "settings": {
+        "language": "python",
+        "version": "3.8",
+        "dependencies": ["ast", "json"]
+      },
+      "data": "",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUpdated": "2024-01-01T00:00:00.000Z",
+      "isActive": true
+    }
+  ],
+  "lastUpdated": "2024-01-01T00:00:00.000Z"
+}
