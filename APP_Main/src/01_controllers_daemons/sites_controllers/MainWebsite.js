@@ -53,11 +53,11 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
             <div className="navbar-auth">
               <button className="btn-login" onClick={handleLoginClick}>
                 <i className="fas fa-sign-in-alt"></i>
-                Giriş Yap
+                Sign In
               </button>
               <button className="btn-register" onClick={handleRegisterClick}>
                 <i className="fas fa-user-plus"></i>
-                Kayıt Ol
+                Sign Up
               </button>
             </div>
           </div>
@@ -67,16 +67,16 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         <main className="main-body">
           <div className="hero-section">
             <div className="hero-content">
-              <h1 className="hero-title">Zenarth'a Hoş Geldiniz</h1>
+              <h1 className="hero-title">Welcome to Zenarth</h1>
               <p className="hero-subtitle">
-                Modern ve güvenilir çözümlerle işinizi bir üst seviyeye taşıyın.
+                Take your business to the next level with modern and reliable solutions.
               </p>
               <div className="hero-buttons">
                 <button className="btn-primary" onClick={handleRegisterClick}>
-                  Hemen Başla
+                  Get Started
                 </button>
                 <button className="btn-secondary" onClick={handleLoginClick}>
-                  Giriş Yap
+                  Sign In
                 </button>
               </div>
             </div>
@@ -89,7 +89,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         {/* Footer */}
         <footer className="footer">
           <div className="footer-bottom">
-            <p>&copy; 2024 Zenarth. Tüm hakları saklıdır.</p>
+            <p>&copy; 2025 Zenarth All rights reserved.</p>
           </div>
         </footer>
       </div>
@@ -144,7 +144,6 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         }
 
         .ai-italic {
-          font-style: italic;
           font-weight: 500;
         }
 
@@ -276,6 +275,9 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         }
 
         .footer-bottom {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 2rem;
           text-align: center;
           color: #ccc;
         }

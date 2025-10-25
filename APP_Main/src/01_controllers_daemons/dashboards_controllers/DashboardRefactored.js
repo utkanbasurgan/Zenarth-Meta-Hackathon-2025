@@ -15,7 +15,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSubSection, setActiveSubSection] = useState('stats');
   const [user, setUser] = useState({
     name: 'Kullanıcı',
-    email: 'user@example.com',
+    email: 'user@zenarth.ai',
     avatar: null
   });
 
@@ -548,15 +548,15 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .logout-btn {
           padding: 0.5rem;
           border: none;
-          background: rgba(255, 0, 0, 0.1);
-          color: #dc3545;
+          background: rgba(31, 30, 122, 0.1);
+          color: #1f1e7a;
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-          background: rgba(255, 0, 0, 0.2);
+          background: rgba(31, 30, 122, 0.2);
           transform: scale(1.05);
         }
 

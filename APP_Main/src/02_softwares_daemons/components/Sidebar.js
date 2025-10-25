@@ -42,38 +42,6 @@ const Sidebar = ({
             <span>Projects</span>
           </button>
           
-          <button 
-            className={`nav-item ${activeSection === 'tasks' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('tasks');
-              setActiveSubSection(subSections.tasks?.[0]?.id || '');
-            }}
-          >
-            <i className="fas fa-tasks"></i>
-            <span>Tasks</span>
-          </button>
-          
-          <button 
-            className={`nav-item ${activeSection === 'team' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('team');
-              setActiveSubSection(subSections.team?.[0]?.id || '');
-            }}
-          >
-            <i className="fas fa-users"></i>
-            <span>Team</span>
-          </button>
-          
-          <button 
-            className={`nav-item ${activeSection === 'analyze' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('analyze');
-              setActiveSubSection(subSections.analyze?.[0]?.id || '');
-            }}
-          >
-            <i className="fas fa-chart-line"></i>
-            <span>Analysis</span>
-          </button>
           
           <button 
             className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}
@@ -86,12 +54,18 @@ const Sidebar = ({
             <span>Settings</span>
           </button>
         </nav>
+        
+        <div className="sidebar-footer">
+          <span className="copyright">
+            <span className="copyright-symbol">©</span> <span className="copyright-year">2025</span> <span className="copyright-brand">Zenarth</span>
+          </span>
+        </div>
       </div>
 
-      {/* Second Left Sidebar - Sub Pages */}
+      {/* Second Left Sidebar - Page */}
       <div className="sub-sidebar">
         <div className="sub-sidebar-header">
-          <h3>Sub Pages</h3>
+          <h3>Pages</h3>
         </div>
         
         <nav className="sub-nav">

@@ -7,7 +7,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSubSection, setActiveSubSection] = useState('stats');
   const [user, setUser] = useState({
     name: 'Kullanıcı',
-    email: 'user@example.com',
+    email: 'user@zenarth.ai',
     avatar: null
   });
 
@@ -418,7 +418,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           </nav>
         </div>
 
-        {/* Second Left Sidebar - Sub Pages */}
+        {/* Second Left Sidebar - Page */}
         <div className="sub-sidebar">
           <div className="sub-sidebar-header">
             <h3>Alt Sayfalar</h3>
@@ -1254,8 +1254,8 @@ const Dashboard = ({ onNavigateToWebsite }) => {
 
         .logout-btn {
           background: transparent;
-          border: 2px solid #666;
-          color: #666;
+          border: 2px solid #1f1e7a;
+          color: #1f1e7a;
           cursor: pointer;
           padding: 0.75rem;
           border-radius: 50%;
@@ -1264,8 +1264,8 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .logout-btn:hover {
-          background-color: #e74c3c;
-          border-color: #e74c3c;
+          background-color: #1f1e7a;
+          border-color: #1f1e7a;
           color: white;
         }
 

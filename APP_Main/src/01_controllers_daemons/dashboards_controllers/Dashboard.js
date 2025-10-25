@@ -3,18 +3,25 @@ import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
 import Sidebar from '../../02_softwares_daemons/components/Sidebar';
 import Topbar from '../../02_softwares_daemons/components/Topbar';
 import OverviewPage from './pages/OverviewPage';
+import OverviewStatistics from './pages/OverviewStatistics';
+import OverviewChart from './pages/OverviewChart';
+import OverviewActivities from './pages/OverviewActivities';
 import ProjectsPage from './pages/ProjectsPage';
-import TasksPage from './pages/TasksPage';
-import TeamPage from './pages/TeamPage';
-import AnalyzePage from './pages/AnalyzePage';
+import Project1 from './pages/Project1';
+import Project2 from './pages/Project2';
+import Project3 from './pages/Project3';
+import Project4 from './pages/Project4';
 import SettingsPage from './pages/SettingsPage';
+import SettingsProfile from './pages/SettingsProfile';
+import SettingsPreferences from './pages/SettingsPreferences';
+import SettingsSecurity from './pages/SettingsSecurity';
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [activeSubSection, setActiveSubSection] = useState('stats');
   const [user, setUser] = useState({
     name: 'User',
-    email: 'user@example.com',
+    email: 'user@zenarth.ai',
     avatar: null
   });
 
@@ -62,26 +69,10 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       { id: 'activities', name: 'Activities', icon: 'fas fa-history' }
     ],
     projects: [
-      { id: 'all', name: 'All Projects', icon: 'fas fa-folder' },
-      { id: 'active', name: 'Active Projects', icon: 'fas fa-play' },
-      { id: 'completed', name: 'Completed', icon: 'fas fa-check' },
-      { id: 'archived', name: 'Archived', icon: 'fas fa-archive' }
-    ],
-    tasks: [
-      { id: 'my-tasks', name: 'My Tasks', icon: 'fas fa-tasks' },
-      { id: 'assigned', name: 'Assigned', icon: 'fas fa-user-plus' },
-      { id: 'completed', name: 'Completed', icon: 'fas fa-check-circle' },
-      { id: 'overdue', name: 'Overdue', icon: 'fas fa-exclamation-triangle' }
-    ],
-    team: [
-      { id: 'members', name: 'Members', icon: 'fas fa-users' },
-      { id: 'roles', name: 'Roles', icon: 'fas fa-user-tag' },
-      { id: 'permissions', name: 'Permissions', icon: 'fas fa-shield-alt' }
-    ],
-    analyze: [
-      { id: 'data-upload', name: 'Upload Data', icon: 'fas fa-upload' },
-      { id: 'ai-analysis', name: 'AI Analysis', icon: 'fas fa-robot' },
-      { id: 'reports', name: 'Reports', icon: 'fas fa-file-alt' }
+      { id: 'all', name: 'Project 1', icon: 'fas fa-folder' },
+      { id: 'active', name: 'Project 2', icon: 'fas fa-folder' },
+      { id: 'completed', name: 'Project 3', icon: 'fas fa-folder' },
+      { id: 'archived', name: 'Project 4', icon: 'fas fa-folder' }
     ],
     settings: [
       { id: 'profile', name: 'Profile', icon: 'fas fa-user' },
@@ -220,36 +211,47 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const renderPage = () => {
     switch (activeSection) {
       case 'overview':
-        return <OverviewPage stats={stats} recentActivities={recentActivities} />;
+        // Handle overview subpages
+        switch (activeSubSection) {
+          case 'stats':
+            return <OverviewStatistics />;
+          case 'charts':
+            return <OverviewChart />;
+          case 'activities':
+            return <OverviewActivities />;
+          default:
+            return <OverviewPage stats={stats} recentActivities={recentActivities} />;
+        }
       case 'projects':
-        return <ProjectsPage 
-          projects={projects} 
-          getStatusColor={getStatusColor} 
-          getStatusText={getStatusText} 
-        />;
-      case 'tasks':
-        return <TasksPage />;
-      case 'team':
-        return <TeamPage />;
-      case 'analyze':
-        return <AnalyzePage
-          csvData={csvData}
-          headers={headers}
-          fileName={fileName}
-          aiSearchQuery={aiSearchQuery}
-          setAiSearchQuery={setAiSearchQuery}
-          isAiLoading={isAiLoading}
-          aiError={aiError}
-          filteredData={filteredData}
-          quickActions={quickActions}
-          isGeneratingActions={isGeneratingActions}
-          handleFileUpload={handleFileUpload}
-          handleAiSearch={handleAiSearch}
-          handleQuickAction={handleQuickAction}
-          setFilteredData={setFilteredData}
-        />;
+        // Handle projects subpages
+        switch (activeSubSection) {
+          case 'all':
+            return <Project1 />;
+          case 'active':
+            return <Project2 />;
+          case 'completed':
+            return <Project3 />;
+          case 'archived':
+            return <Project4 />;
+          default:
+            return <ProjectsPage 
+              projects={projects} 
+              getStatusColor={getStatusColor} 
+              getStatusText={getStatusText} 
+            />;
+        }
       case 'settings':
-        return <SettingsPage />;
+        // Handle settings subpages
+        switch (activeSubSection) {
+          case 'profile':
+            return <SettingsProfile />;
+          case 'preferences':
+            return <SettingsPreferences />;
+          case 'security':
+            return <SettingsSecurity />;
+          default:
+            return <SettingsPage />;
+        }
       default:
         return <OverviewPage stats={stats} recentActivities={recentActivities} />;
     }
@@ -306,30 +308,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         </div>
       )}
 
-      {/* Floating AI Search Box */}
-      <div className="floating-search">
-        <div className="search-box">
-          <i className="fas fa-magic"></i>
-          <input 
-            type="text" 
-            placeholder="Ask AI anything..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleGeneralAiSearch();
-              }
-            }}
-          />
-          <button 
-            className="ai-search-btn"
-            onClick={handleGeneralAiSearch}
-            title="Search with AI"
-          >
-            <i className="fas fa-robot"></i>
-          </button>
-        </div>
-      </div>
 
       <style jsx>{`
         .dashboard {
@@ -373,8 +351,36 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .ai-italic {
-          font-style: italic;
           font-weight: 500;
+        }
+
+        .sidebar-footer {
+          padding: 1rem 1.5rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+          text-align: center;
+          margin-top: auto;
+        }
+
+        .copyright {
+          font-size: 0.9rem;
+          color: #666;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.25rem;
+        }
+
+        .copyright-symbol {
+          font-weight: 500;
+        }
+
+        .copyright-year {
+          font-weight: 500;
+        }
+
+        .copyright-brand {
+          font-weight: 600;
+          color: #333;
         }
 
         .sidebar-nav {
@@ -556,15 +562,15 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .logout-btn {
           padding: 0.5rem;
           border: none;
-          background: rgba(255, 0, 0, 0.1);
-          color: #dc3545;
+          background: rgba(31, 30, 122, 0.1);
+          color: #1f1e7a;
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-          background: rgba(255, 0, 0, 0.2);
+          background: rgba(31, 30, 122, 0.2);
           transform: scale(1.05);
         }
 
@@ -1207,60 +1213,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           font-size: 0.9rem;
         }
 
-        .floating-search {
-          position: fixed;
-          bottom: 2rem;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 1000;
-        }
-
-        .search-box {
-          position: relative;
-          background: white;
-          border-radius: 25px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-          padding: 0.75rem 1rem;
-          min-width: 400px;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .search-box i {
-          color: #1f1e7a;
-          font-size: 1.1rem;
-        }
-
-        .search-box input {
-          flex: 1;
-          border: none;
-          outline: none;
-          font-size: 0.95rem;
-          color: #333;
-        }
-
-        .search-box input::placeholder {
-          color: #999;
-        }
-
-        .ai-search-btn {
-          width: 36px;
-          height: 36px;
-          border: none;
-          background: linear-gradient(135deg, #1f1e7a, #1f1e7a);
-          color: white;
-          border-radius: 50%;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-        }
-
-        .ai-search-btn:hover {
-          transform: scale(1.1);
-        }
 
         @media (max-width: 992px) {
           .sub-sidebar {
@@ -1285,27 +1237,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
             display: none;
           }
 
-          .floating-search .search-box {
-            min-width: 320px;
-            padding: 0.625rem;
-            border-radius: 14px;
-          }
-
-          .floating-search .search-box input {
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
-            font-size: 0.95rem;
-          }
-
-          .floating-search .search-box i {
-            left: 1rem;
-            font-size: 1rem;
-          }
-
-          .ai-search-btn {
-            width: 32px;
-            height: 32px;
-            right: 0.625rem;
-          }
 
           .ai-response-section {
             width: 95%;

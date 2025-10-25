@@ -1,56 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ProjectsPage = ({ projects, getStatusColor, getStatusText }) => {
+const ProjectsPage = () => {
+  const [scriptOutput, setScriptOutput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const runPythonScript = async () => {
+    setLoading(true);
+    setScriptOutput(''); // Clear previous output
+    try {
+      const response = await fetch('http://localhost:3001/api/run-python-script', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          scriptPath: '/Users/utkan.basurgan/Main/1. Works Files/2. Gits Works/Zenarth-Meta-Hackathon-2025/APP_Backend/api_protocol.py'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.text();
+      setScriptOutput(result);
+    } catch (error) {
+      console.error('Error running script:', error);
+      setScriptOutput(`Error: Could not run the script - ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-run the script when component mounts
+  useEffect(() => {
+    runPythonScript();
+  }, []);
+
   return (
     <div className="projects-section">
-      <div className="section-header">
-        <h2>My Projects</h2>
-        <button className="btn-primary">
-          <i className="fas fa-plus"></i>
-          New Project
-        </button>
-      </div>
-      
-      <div className="projects-grid">
-        {projects.map(project => (
-          <div key={project.id} className="project-card">
-            <div className="project-header">
-              <h3 className="project-name">{project.name}</h3>
-              <span 
-                className="project-status"
-                style={{ backgroundColor: getStatusColor(project.status) }}
-              >
-                {getStatusText(project.status)}
-              </span>
-            </div>
-            
-            <div className="project-progress">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${project.progress}%` }}
-                ></div>
-              </div>
-              <span className="progress-text">{project.progress}%</span>
-            </div>
-            
-            <div className="project-footer">
-              <div className="project-deadline">
-                <i className="fas fa-calendar"></i>
-                <span>{project.deadline}</span>
-              </div>
-              <div className="project-actions">
-                <button className="action-btn">
-                  <i className="fas fa-edit"></i>
-                </button>
-                <button className="action-btn">
-                  <i className="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <h2>Team Members</h2>
+      <button onClick={runPythonScript} disabled={loading}>
+        {loading ? 'Running...' : 'Run Python Script'}
+      </button>
+      {scriptOutput && (
+        <div className="script-output">
+          <h3>Script Output:</h3>
+          <pre>{scriptOutput}</pre>
+        </div>
+      )}
     </div>
   );
 };
