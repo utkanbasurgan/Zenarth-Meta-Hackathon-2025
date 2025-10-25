@@ -2,41 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { writeDenemeToLog, readLogFile, logError } from '../logService';
 
-function Secondary() {
+function Secondary()
+{
   const [logStatus, setLogStatus] = useState('Initializing...');
   const [logContent, setLogContent] = useState('');
 
-  useEffect(() => {
-    // This page will trigger the error when it loads
-    const handleLogging = async () => {
+  useEffect(() =>
+  {
+    const handleLogging = async () =>
+    {
       setLogStatus('Loading Secondary page...');
       
-      try {
-        // OBVIOUS ERROR: This will cause an error on the Secondary page
+      try
+      {
         const undefinedObject = null;
         const errorValue = undefinedObject.someProperty.that.does.not.exist;
+        
         console.log('This will never execute:', errorValue);
+      }
+      catch (error)
+      {
+        const errorMessage = `Secondary Page Error: ${error.message}\nStack: ${error.stack}`;
+        setLogStatus(`❌ Error occurred: ${error.message}`);
         
-        const success = await writeDenemeToLog();
-        
-        if (success) {
-          setLogStatus('✅ Successfully wrote "Deneme!" to log file via API');
-          
-          // Read the log file to show its content
-          const content = await readLogFile();
-          if (content) {
-            setLogContent(content);
-          }
-        } else {
-          setLogStatus('❌ Failed to write to log file via API');
-        }
-      } catch (error) {
-        setLogStatus(`❌ Error: ${error.message}`);
-        // Log the error to the file
         await logError(error);
+        
+        const content = await readLogFile();
+        if (content)
+        {
+          setLogContent(content);
+        }
       }
     };
-    
+
     handleLogging();
   }, []);
 
@@ -44,17 +42,17 @@ function Secondary() {
     <div style={{ padding: '20px' }}>
       <h1>⚠️ Secondary Page</h1>
       <p>This page contains the error that gets logged to the file.</p>
-      
+
       <div style={{ marginTop: '20px' }}>
         <h3>Navigation:</h3>
-        <Link 
-          to="/" 
-          style={{ 
-            display: 'inline-block', 
-            padding: '10px 20px', 
-            backgroundColor: '#28a745', 
-            color: 'white', 
-            textDecoration: 'none', 
+        <Link
+          to="/"
+          style={{
+            display: 'inline-block',
+            padding: '10px 20px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            textDecoration: 'none',
             borderRadius: '5px',
             marginRight: '10px'
           }}
@@ -62,7 +60,7 @@ function Secondary() {
           Back to Home
         </Link>
       </div>
-      
+
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff3cd', borderRadius: '5px' }}>
         <h4>⚠️ Secondary Page Status:</h4>
         <p>{logStatus}</p>
@@ -70,7 +68,16 @@ function Secondary() {
         {logContent && (
           <div style={{ marginTop: '10px' }}>
             <h5>Log File Content:</h5>
-            <pre style={{ backgroundColor: '#f8f9fa', padding: '10px', borderRadius: '3px', fontSize: '12px', overflow: 'auto', maxHeight: '200px' }}>
+            <pre style={{ 
+              backgroundColor: '#f8f9fa', 
+              padding: '10px', 
+              borderRadius: '3px', 
+              fontSize: '12px', 
+              overflow: 'auto', 
+              maxHeight: '200px',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word'
+            }}>
               {logContent}
             </pre>
           </div>

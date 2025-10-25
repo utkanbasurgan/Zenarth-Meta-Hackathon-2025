@@ -245,141 +245,147 @@ Command executed successfully - found 10 log files containing React errors`);
             </div>
             
             <div className="modal-body">
-              {/* Error Details Section */}
-              <div className="error-details-section">
-                <div className="error-details-header">
-                  <h4>Error Analysis</h4>
-                  <div className="error-stats">
-                    <div className="error-stat">
-                      <span className="stat-label">Errors Found:</span>
-                      <span className="stat-value">4</span>
-                    </div>
-                    <div className="error-stat">
-                      <span className="stat-label">Severity:</span>
-                      <span className="stat-value high">High</span>
-                    </div>
-                    <div className="error-stat">
-                      <span className="stat-label">Status:</span>
-                      <span className="stat-value">Active</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="error-summary">
-                  <div className="error-item">
-                    <i className="fas fa-exclamation-triangle error-icon"></i>
-                    <div className="error-info">
-                      <strong>React Error #31</strong>
-                      <p>findDOMNode issue in component lifecycle</p>
-                    </div>
-                  </div>
-                  <div className="error-item">
-                    <i className="fas fa-bug error-icon"></i>
-                    <div className="error-info">
-                      <strong>TypeError: Cannot read property 'map'</strong>
-                      <p>Undefined array access in UserList component</p>
-                    </div>
-                  </div>
-                  <div className="error-item">
-                    <i className="fas fa-memory error-icon"></i>
-                    <div className="error-info">
-                      <strong>Memory Leak Warning</strong>
-                      <p>State update on unmounted component</p>
-                    </div>
-                  </div>
-                  <div className="error-item">
-                    <i className="fas fa-code error-icon"></i>
-                    <div className="error-info">
-                      <strong>Element type is invalid</strong>
-                      <p>Import/export issue with component definition</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dual Code Viewers Section */}
-              <div className="dual-code-viewer">
-                <div className="code-viewer-left">
-                  <div className="code-header">
-                    <span className="code-label">Original Error Log</span>
-                    <div className="code-actions">
-                      <span className="error-badge">React Errors</span>
-                      <button 
-                        className="run-btn"
-                        onClick={runOriginalCommand}
-                        disabled={runningOriginal}
-                      >
-                        {runningOriginal ? (
-                          <>
-                            <div className="spinner"></div>
-                            Analyzing...
-                          </>
-                        ) : (
-                          <>
-                            <i className="fas fa-play"></i>
-                            Analyze Log
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <pre className="code-block">{errorLog}</pre>
-                  {originalOutput && (
-                    <div className="output-container">
-                      <div className="output-header">
-                        <i className="fas fa-terminal"></i>
-                        <span>Analysis Output</span>
+              {/* Combined Error Details and Code Comparison Section */}
+              <div className="combined-error-section">
+                {/* Error Analysis Header */}
+                <div className="error-analysis-header">
+                  <div className="error-details-header">
+                    <h4>Error Analysis</h4>
+                    <div className="error-stats">
+                      <div className="error-stat">
+                        <span className="stat-label">Errors Found:</span>
+                        <span className="stat-value">4</span>
                       </div>
-                      <pre className="output-text">{originalOutput}</pre>
+                      <div className="error-stat">
+                        <span className="stat-label">Severity:</span>
+                        <span className="stat-value high">High</span>
+                      </div>
+                      <div className="error-stat">
+                        <span className="stat-label">Status:</span>
+                        <span className="stat-value">Active</span>
+                      </div>
                     </div>
-                  )}
+                  </div>
+                  
+                  <div className="error-summary">
+                    <div className="error-item">
+                      <i className="fas fa-exclamation-triangle error-icon"></i>
+                      <div className="error-info">
+                        <strong>React Error #31</strong>
+                        <p>findDOMNode issue in component lifecycle</p>
+                      </div>
+                    </div>
+                    <div className="error-item">
+                      <i className="fas fa-bug error-icon"></i>
+                      <div className="error-info">
+                        <strong>TypeError: Cannot read property 'map'</strong>
+                        <p>Undefined array access in UserList component</p>
+                      </div>
+                    </div>
+                    <div className="error-item">
+                      <i className="fas fa-memory error-icon"></i>
+                      <div className="error-info">
+                        <strong>Memory Leak Warning</strong>
+                        <p>State update on unmounted component</p>
+                      </div>
+                    </div>
+                    <div className="error-item">
+                      <i className="fas fa-code error-icon"></i>
+                      <div className="error-info">
+                        <strong>Element type is invalid</strong>
+                        <p>Import/export issue with component definition</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="code-viewer-right">
-                  <div className="code-header">
-                    <span className="code-label">AI-Generated Fix</span>
-                    <div className="code-actions">
-                      <span className="ai-badge">AI Generated</span>
-                      {aiFixedCommand && (
-                        <button 
-                          className="run-btn fixed-run-btn"
-                          onClick={runFixedCommand}
-                          disabled={runningFixed}
-                        >
-                          {runningFixed ? (
-                            <>
-                              <div className="spinner"></div>
-                              Running...
-                            </>
-                          ) : (
-                            <>
-                              <i className="fas fa-play"></i>
-                              Run Fix
-                            </>
+                {/* Code Comparison Section */}
+                <div className="code-comparison-section">
+                  <h4 className="comparison-title">Code Comparison</h4>
+                  <div className="dual-code-viewer">
+                    <div className="code-viewer-left">
+                      <div className="code-header">
+                        <span className="code-label">Original Error Log</span>
+                        <div className="code-actions">
+                          <span className="error-badge">React Errors</span>
+                          <button 
+                            className="run-btn"
+                            onClick={runOriginalCommand}
+                            disabled={runningOriginal}
+                          >
+                            {runningOriginal ? (
+                              <>
+                                <div className="spinner"></div>
+                                Analyzing...
+                              </>
+                            ) : (
+                              <>
+                                <i className="fas fa-play"></i>
+                                Analyze Log
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      <pre className="code-block">{errorLog}</pre>
+                      {originalOutput && (
+                        <div className="output-container">
+                          <div className="output-header">
+                            <i className="fas fa-terminal"></i>
+                            <span>Analysis Output</span>
+                          </div>
+                          <pre className="output-text">{originalOutput}</pre>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="code-viewer-right">
+                      <div className="code-header">
+                        <span className="code-label">AI-Generated Fix</span>
+                        <div className="code-actions">
+                          <span className="ai-badge">AI Generated</span>
+                          {aiFixedCommand && (
+                            <button 
+                              className="run-btn fixed-run-btn"
+                              onClick={runFixedCommand}
+                              disabled={runningFixed}
+                            >
+                              {runningFixed ? (
+                                <>
+                                  <div className="spinner"></div>
+                                  Running...
+                                </>
+                              ) : (
+                                <>
+                                  <i className="fas fa-play"></i>
+                                  Run Fix
+                                </>
+                              )}
+                            </button>
                           )}
-                        </button>
+                        </div>
+                      </div>
+                      {aiFixedCommand ? (
+                        <pre className="code-block ai-fixed-code">{aiFixedCommand}</pre>
+                      ) : (
+                        <div className="placeholder-code">
+                          <div className="placeholder-content">
+                            <i className="fas fa-robot"></i>
+                            <p>AI fix will appear here after clicking "AI Quick Fix"</p>
+                          </div>
+                        </div>
+                      )}
+                      {fixedOutput && (
+                        <div className="output-container fixed-output">
+                          <div className="output-header">
+                            <i className="fas fa-check-circle"></i>
+                            <span>Fix Output</span>
+                          </div>
+                          <pre className="output-text">{fixedOutput}</pre>
+                        </div>
                       )}
                     </div>
                   </div>
-                  {aiFixedCommand ? (
-                    <pre className="code-block ai-fixed-code">{aiFixedCommand}</pre>
-                  ) : (
-                    <div className="placeholder-code">
-                      <div className="placeholder-content">
-                        <i className="fas fa-robot"></i>
-                        <p>AI fix will appear here after clicking "AI Quick Fix"</p>
-                      </div>
-                    </div>
-                  )}
-                  {fixedOutput && (
-                    <div className="output-container fixed-output">
-                      <div className="output-header">
-                        <i className="fas fa-check-circle"></i>
-                        <span>Fix Output</span>
-                      </div>
-                      <pre className="output-text">{fixedOutput}</pre>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -524,10 +530,14 @@ Command executed successfully - found 10 log files containing React errors`);
           transform: scale(1.1);
         }
 
-        .error-details-section {
-          padding: 2rem;
+        .combined-error-section {
           background: #f8fafc;
-          border-bottom: 1px solid #e2e8f0;
+          min-height: 100%;
+        }
+
+        .error-analysis-header {
+          padding: 2rem 2rem 1rem 2rem;
+          background: #f8fafc;
         }
 
         .error-details-header {
@@ -617,12 +627,24 @@ Command executed successfully - found 10 log files containing React errors`);
           line-height: 1.4;
         }
 
+        .code-comparison-section {
+          padding: 0 2rem 2rem 2rem;
+          background: white;
+        }
+
+        .comparison-title {
+          margin: 0 0 1.5rem 0;
+          color: #1f1e7a;
+          font-size: 1.25rem;
+          font-weight: 600;
+          padding-bottom: 0.5rem;
+          border-bottom: 2px solid #e2e8f0;
+        }
+
         .dual-code-viewer {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 1rem;
-          padding: 2rem;
-          background: white;
           min-height: 500px;
         }
 
@@ -969,7 +991,7 @@ Command executed successfully - found 10 log files containing React errors`);
             font-size: 1.25rem;
           }
           
-          .error-details-section {
+          .error-analysis-header {
             padding: 1rem;
           }
           
@@ -985,6 +1007,10 @@ Command executed successfully - found 10 log files containing React errors`);
           
           .error-summary {
             grid-template-columns: 1fr;
+          }
+          
+          .code-comparison-section {
+            padding: 0 1rem 1rem 1rem;
           }
           
           .dual-code-viewer {

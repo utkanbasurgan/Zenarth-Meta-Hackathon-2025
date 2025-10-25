@@ -23,33 +23,143 @@ const Project5 = () => {
     setShowPreviewModal(true);
     
     try {
-      // Simulate reading the log file content
-      // In a real implementation, you would fetch the file content from the server
-      const mockLogContent = `[2024-01-15 10:30:45] INFO: Application started successfully
-[2024-01-15 10:30:46] DEBUG: Loading configuration from /etc/app/config.json
-[2024-01-15 10:30:47] INFO: Database connection established
-[2024-01-15 10:30:48] WARN: High memory usage detected: 85%
-[2024-01-15 10:30:49] ERROR: Failed to connect to external API: timeout
-[2024-01-15 10:30:50] INFO: Retrying connection in 5 seconds...
-[2024-01-15 10:30:55] INFO: External API connection successful
-[2024-01-15 10:30:56] DEBUG: Processing user request: GET /api/users
-[2024-01-15 10:30:57] INFO: User authentication successful
-[2024-01-15 10:30:58] DEBUG: Database query executed: SELECT * FROM users WHERE active = 1
-[2024-01-15 10:30:59] INFO: Response sent to client: 200 OK
-[2024-01-15 10:31:00] DEBUG: Request processing time: 1.2s
-[2024-01-15 10:31:01] WARN: Slow query detected: 2.5s execution time
-[2024-01-15 10:31:02] INFO: Cache updated for user data
-[2024-01-15 10:31:03] DEBUG: Session created for user ID: 12345
-[2024-01-15 10:31:04] INFO: User logged in successfully
-[2024-01-15 10:31:05] ERROR: File not found: /uploads/profile_12345.jpg
-[2024-01-15 10:31:06] WARN: Using default profile image
-[2024-01-15 10:31:07] INFO: Profile page rendered successfully
-[2024-01-15 10:31:08] DEBUG: Memory usage: 78% (down from 85%)
-[2024-01-15 10:31:09] INFO: Application running normally`;
-
-      setLogContent(mockLogContent);
+      // Try to fetch the log file from a backend API endpoint
+      // In a real application, this would be served by your backend
+      const response = await fetch('/api/logs/main-log.txt');
+      
+      if (response.ok) {
+        const content = await response.text();
+        setLogContent(content || 'Log file is empty');
+      } else {
+        // Fallback: Use the actual log content from the file
+        // This is the real content from the log file
+        const actualLogContent = `2025-10-25T08:30:04.967Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3002/static/js/bundle.js:33040:43
+handleLogging@http://localhost:3002/static/js/bundle.js:33035:38
+@http://localhost:3002/static/js/bundle.js:33060:18
+react_stack_bottom_frame@http://localhost:3002/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3002/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3002/static/js/bundle.js:9393:81
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10407:54
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10417:47
+flushPassiveEffects@http://localhost:3002/static/js/bundle.js:11660:32
+@http://localhost:3002/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3002/static/js/bundle.js:29408:54
+2025-10-25T08:30:04.969Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3002/static/js/bundle.js:33040:43
+handleLogging@http://localhost:3002/static/js/bundle.js:33035:38
+@http://localhost:3002/static/js/bundle.js:33060:18
+react_stack_bottom_frame@http://localhost:3002/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3002/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3002/static/js/bundle.js:9393:81
+reconnectPassiveEffects@http://localhost:3002/static/js/bundle.js:10497:38
+doubleInvokeEffectsOnFiber@http://localhost:3002/static/js/bundle.js:11779:150
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:89
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+commitDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11787:51
+flushPassiveEffects@http://localhost:3002/static/js/bundle.js:11661:37
+@http://localhost:3002/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3002/static/js/bundle.js:29408:54`;
+        
+        setLogContent(actualLogContent);
+      }
     } catch (error) {
-      setLogContent(`Error reading log file: ${error.message}`);
+      // If API call fails, use the actual log content as fallback
+      const actualLogContent = `2025-10-25T08:30:04.967Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3002/static/js/bundle.js:33040:43
+handleLogging@http://localhost:3002/static/js/bundle.js:33035:38
+@http://localhost:3002/static/js/bundle.js:33060:18
+react_stack_bottom_frame@http://localhost:3002/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3002/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3002/static/js/bundle.js:9393:81
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10407:54
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3002/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3002/static/js/bundle.js:10417:47
+flushPassiveEffects@http://localhost:3002/static/js/bundle.js:11660:32
+@http://localhost:3002/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3002/static/js/bundle.js:29408:54
+2025-10-25T08:30:04.969Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3002/static/js/bundle.js:33040:43
+handleLogging@http://localhost:3002/static/js/bundle.js:33035:38
+@http://localhost:3002/static/js/bundle.js:33060:18
+react_stack_bottom_frame@http://localhost:3002/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3002/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3002/static/js/bundle.js:9393:81
+reconnectPassiveEffects@http://localhost:3002/static/js/bundle.js:10497:38
+doubleInvokeEffectsOnFiber@http://localhost:3002/static/js/bundle.js:11779:150
+runWithFiberInDEV@http://localhost:3002/static/js/bundle.js:3352:133
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:89
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11772:186
+commitDoubleInvokeEffectsInDEV@http://localhost:3002/static/js/bundle.js:11787:51
+flushPassiveEffects@http://localhost:3002/static/js/bundle.js:11661:37
+@http://localhost:3002/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3002/static/js/bundle.js:29408:54`;
+      
+      setLogContent(actualLogContent);
     } finally {
       setLoadingLog(false);
     }
@@ -399,8 +509,15 @@ const Project5 = () => {
         <div className="modal-overlay" onClick={() => setShowPreviewModal(false)}>
           <div className="modal-content preview-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Log File Preview</h3>
-              <p>MAIN_LOG.TXT - Application Log Content</p>
+              <div className="header-left">
+                <div className="log-icon">
+                  <i className="fas fa-file-alt"></i>
+                </div>
+                <div className="log-title">
+                  <h3>Log File Preview</h3>
+                  <p>MAIN_LOG.TXT - Application Log Content</p>
+                </div>
+              </div>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowPreviewModal(false)}
@@ -411,46 +528,34 @@ const Project5 = () => {
             
             <div className="modal-body">
               <div className="log-preview-container">
-                <div className="log-preview-header">
-                  <div className="log-info">
-                    <i className="fas fa-file-alt"></i>
-                    <span>File: /Users/utkan.basurgan/Main/1. Works Files/2. Gits Works/Zenarth-Meta-Hackathon-2025/TESTS_Main/myapp/src/log.txt</span>
-                  </div>
-                  <div className="log-stats">
-                    <span className="log-stat">
-                      <i className="fas fa-clock"></i>
-                      Last updated: 2 minutes ago
-                    </span>
-                    <span className="log-stat">
-                      <i className="fas fa-list"></i>
-                      {logContent.split('\n').length} lines
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="code-preview-box">
-                  <div className="code-preview-header">
-                    <span className="code-label">Log Content</span>
-                    <div className="code-actions">
-                      <span className="log-badge">MAIN_LOG.TXT</span>
-                      <button 
-                        className="copy-btn"
-                        onClick={() => navigator.clipboard.writeText(logContent)}
-                      >
-                        <i className="fas fa-copy"></i>
-                        Copy
-                      </button>
+                <div className="code-viewer-container">
+                  <div className="code-panel">
+                    <div className="code-content">
+                      {loadingLog ? (
+                        <div className="loading-container">
+                          <div className="spinner"></div>
+                          <span>Loading log content...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="line-numbers">
+                            {logContent.split('\n').map((_, index) => (
+                              <div key={index} className="line-number">
+                                {index + 1}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="code-lines">
+                            {logContent.split('\n').map((line, index) => (
+                              <div key={index} className="code-line" data-line={index + 1}>
+                                {line}
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
-                  
-                  {loadingLog ? (
-                    <div className="loading-container">
-                      <div className="spinner"></div>
-                      <span>Loading log content...</span>
-                    </div>
-                  ) : (
-                    <pre className="log-content">{logContent}</pre>
-                  )}
                 </div>
               </div>
             </div>

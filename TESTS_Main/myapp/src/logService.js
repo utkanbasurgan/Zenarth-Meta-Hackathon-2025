@@ -79,3 +79,4 @@ export const logError = async (error) => {
     return false;
   }
 };
+
