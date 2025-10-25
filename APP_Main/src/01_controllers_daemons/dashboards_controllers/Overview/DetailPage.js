@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import dataService from '../../../03_datas_daemons/dataService';
 
 const DetailPage = () => {
   const [projectName, setProjectName] = useState('');
   const [projectLocation, setProjectLocation] = useState('');
   const [projectBuild, setProjectBuild] = useState('React');
 
+  // Load project details from data service on component mount
+  useEffect(() => {
+    const projectDetails = dataService.getProjectDetails();
+    setProjectName(projectDetails.name || '');
+    setProjectLocation(projectDetails.location || '');
+    setProjectBuild(projectDetails.build || 'React');
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Project Details:', {
+    const projectDetails = {
       name: projectName,
       location: projectLocation,
       build: projectBuild
-    });
-    // Here you can add logic to save the project details
+    };
+    
+    // Save project details to JSON file via data service
+    dataService.updateProjectDetails(projectDetails);
+    
+    console.log('Project Details saved:', projectDetails);
+    alert('Project details saved successfully!');
   };
 
   return (

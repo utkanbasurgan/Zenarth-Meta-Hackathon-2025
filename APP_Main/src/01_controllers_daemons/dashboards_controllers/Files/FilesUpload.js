@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
+import dataService from '../../../03_datas_daemons/dataService';
 
 const FilesUpload = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -29,13 +30,8 @@ const FilesUpload = () => {
               
               setUploadedFiles(prev => [...prev, fileData]);
               
-              // Store in localStorage for persistence
-              const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
-              storedFiles.push(fileData);
-              localStorage.setItem('uploadedFiles', JSON.stringify(storedFiles));
-              
-              // Trigger storage event to update other components
-              window.dispatchEvent(new Event('storage'));
+              // Store in JSON file via data service
+              dataService.addUploadedFile(fileData);
             }
           },
           error: (error) => {
@@ -74,13 +70,8 @@ const FilesUpload = () => {
             
             setUploadedFiles(prev => [...prev, fileData]);
             
-            // Store in localStorage for persistence
-            const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
-            storedFiles.push(fileData);
-            localStorage.setItem('uploadedFiles', JSON.stringify(storedFiles));
-            
-            // Trigger storage event to update other components
-            window.dispatchEvent(new Event('storage'));
+            // Store in JSON file via data service
+            dataService.addUploadedFile(fileData);
           }
         };
         reader.readAsText(file);
@@ -94,19 +85,14 @@ const FilesUpload = () => {
   const removeFile = (fileId) => {
     setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
     
-    // Update localStorage
-    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
-    const updatedFiles = storedFiles.filter(file => file.id !== fileId);
-    localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles));
-    
-    // Trigger storage event to update other components
-    window.dispatchEvent(new Event('storage'));
+    // Remove from JSON file via data service
+    dataService.removeUploadedFile(fileId);
   };
 
 
-  // Load files from localStorage on component mount
+  // Load files from data service on component mount
   React.useEffect(() => {
-    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+    const storedFiles = dataService.getUploadedFiles();
     setUploadedFiles(storedFiles);
   }, []);
 

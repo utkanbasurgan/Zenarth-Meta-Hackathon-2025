@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
 import Sidebar from '../../02_softwares_daemons/components/Sidebar';
 import Topbar from '../../02_softwares_daemons/components/Topbar';
+import dataService from '../../03_datas_daemons/dataService';
 import {
   OverviewStatistics,
   ChatPage,
@@ -57,17 +58,17 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   
-  // Load user sources from localStorage
+  // Load user sources from data service
   React.useEffect(() => {
-    const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
-    setDynamicSources(storedSources);
+    const sources = dataService.getSources();
+    setDynamicSources(sources);
   }, []);
 
   // Listen for storage changes to update sources list
   React.useEffect(() => {
     const handleStorageChange = () => {
-      const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
-      setDynamicSources(storedSources);
+      const sources = dataService.getSources();
+      setDynamicSources(sources);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -119,8 +120,6 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     overview: [
       { id: 'details', name: 'Details', icon: 'fas fa-info-circle' },
       { id: 'stats', name: 'Statistics', icon: 'fas fa-chart-bar' },
-      { id: 'charts', name: 'Charts', icon: 'fas fa-chart-line' },
-      { id: 'activities', name: 'Activities', icon: 'fas fa-history' },
       { id: 'chat', name: 'Chat', icon: 'fas fa-comments' }
     ],
     projects: generateProjectsSubSections(),
@@ -159,20 +158,11 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // Handle adding new source
   const handleAddSource = () => {
     if (newSourceName.trim()) {
-      const newSource = {
-        id: Date.now(),
-        name: newSourceName.trim(),
-        createdAt: new Date().toISOString()
-      };
+      const newSource = dataService.addSource({
+        name: newSourceName.trim()
+      });
+      
       setDynamicSources(prev => [...prev, newSource]);
-      
-      // Save to user cache (localStorage)
-      const storedSources = JSON.parse(localStorage.getItem('userSources') || '[]');
-      storedSources.push(newSource);
-      localStorage.setItem('userSources', JSON.stringify(storedSources));
-      
-      // Trigger storage event to update other components
-      window.dispatchEvent(new Event('storage'));
       
       setNewSourceName('');
       setShowAddSourceModal(false);
@@ -374,9 +364,34 @@ const Dashboard = ({ onNavigateToWebsite }) => {
                 </div>
                 
                 <div className="console-sidebar">
+                  {/* Quick Actions Panel - Top */}
+                  <div className="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <div className="actions-list">
+                      <button className="action-btn">
+                        <i className="fas fa-play"></i>
+                        <span>Start Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-stop"></i>
+                        <span>Stop Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-history"></i>
+                        <span>View History</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-cog"></i>
+                        <span>Settings</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Agents Panel - Bottom */}
                   <div className="agents-panel">
                     <h3>Available Agents</h3>
                     <div className="agents-list">
+                      {/* Default System Agents */}
                       <div className="agent-item">
                         <div className="agent-icon">
                           <i className="fas fa-robot"></i>
@@ -404,28 +419,19 @@ const Dashboard = ({ onNavigateToWebsite }) => {
                           <div className="agent-status offline">Offline</div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div className="quick-actions-panel">
-                    <h3>Quick Actions</h3>
-                    <div className="actions-list">
-                      <button className="action-btn">
-                        <i className="fas fa-play"></i>
-                        <span>Start Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-stop"></i>
-                        <span>Stop Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-history"></i>
-                        <span>View History</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-cog"></i>
-                        <span>Settings</span>
-                      </button>
+                      
+                      {/* Dynamic Sources as Agents */}
+                      {dynamicSources.map((source, index) => (
+                        <div key={`source-${index}`} className="agent-item source-agent">
+                          <div className="agent-icon">
+                            <i className="fas fa-file"></i>
+                          </div>
+                          <div className="agent-info">
+                            <div className="agent-name">{source.name || `Source ${index + 1}`}</div>
+                            <div className="agent-status online">Available</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -484,9 +490,34 @@ const Dashboard = ({ onNavigateToWebsite }) => {
                 </div>
                 
                 <div className="console-sidebar">
+                  {/* Quick Actions Panel - Top */}
+                  <div className="quick-actions-panel">
+                    <h3>Quick Actions</h3>
+                    <div className="actions-list">
+                      <button className="action-btn">
+                        <i className="fas fa-play"></i>
+                        <span>Start Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-stop"></i>
+                        <span>Stop Session</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-history"></i>
+                        <span>View History</span>
+                      </button>
+                      <button className="action-btn">
+                        <i className="fas fa-cog"></i>
+                        <span>Settings</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Agents Panel - Bottom */}
                   <div className="agents-panel">
                     <h3>Available Agents</h3>
                     <div className="agents-list">
+                      {/* Default System Agents */}
                       <div className="agent-item">
                         <div className="agent-icon">
                           <i className="fas fa-robot"></i>
@@ -514,28 +545,19 @@ const Dashboard = ({ onNavigateToWebsite }) => {
                           <div className="agent-status offline">Offline</div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div className="quick-actions-panel">
-                    <h3>Quick Actions</h3>
-                    <div className="actions-list">
-                      <button className="action-btn">
-                        <i className="fas fa-play"></i>
-                        <span>Start Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-stop"></i>
-                        <span>Stop Session</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-history"></i>
-                        <span>View History</span>
-                      </button>
-                      <button className="action-btn">
-                        <i className="fas fa-cog"></i>
-                        <span>Settings</span>
-                      </button>
+                      
+                      {/* Dynamic Sources as Agents */}
+                      {dynamicSources.map((source, index) => (
+                        <div key={`source-${index}`} className="agent-item source-agent">
+                          <div className="agent-icon">
+                            <i className="fas fa-file"></i>
+                          </div>
+                          <div className="agent-info">
+                            <div className="agent-name">{source.name || `Source ${index + 1}`}</div>
+                            <div className="agent-status online">Available</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -824,7 +846,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         }
 
         .dashboard-header {
-          padding: 1.5rem 2rem;
+          padding: 1rem 2rem;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
           display: flex;
           justify-content: space-between;
@@ -1631,6 +1653,8 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .console-main {
           display: flex;
           flex-direction: column;
+          flex: 1;
+          min-height: 400px;
         }
 
         .terminal-window {
@@ -1745,8 +1769,18 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .agents-panel, .quick-actions-panel {
           background: white;
           border-radius: 12px;
-          padding: 1.5rem;
+          padding: 1rem;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-actions-panel {
+          flex-shrink: 0;
+        }
+        
+        .agents-panel {
+          flex-shrink: 0;
+          max-height: 200px;
+          overflow-y: auto;
         }
 
         .agents-panel h3, .quick-actions-panel h3 {
@@ -1817,6 +1851,15 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           background: #fee2e2;
           color: #dc2626;
         }
+        
+        .source-agent {
+          border-left: 3px solid #1f1e7a;
+          background: rgba(31, 30, 122, 0.05);
+        }
+        
+        .source-agent .agent-icon {
+          color: #1f1e7a;
+        }
 
         .actions-list {
           display: flex;
@@ -1827,22 +1870,27 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         .action-btn {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.5rem;
           padding: 0.75rem 1rem;
           background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 8px;
           color: #1f1e7a;
+          font-size: 0.9rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
           text-align: left;
+          width: 100%;
+          justify-content: flex-start;
         }
 
         .action-btn:hover {
-          background: #f1f5f9;
+          background: #1f1e7a;
+          color: white;
           border-color: #1f1e7a;
           transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(31, 30, 122, 0.2);
         }
 
         .action-btn i {
@@ -1852,17 +1900,16 @@ const Dashboard = ({ onNavigateToWebsite }) => {
 
         @media (max-width: 768px) {
           .console-grid {
-            grid-template-columns: 1fr;
             gap: 1rem;
             padding: 1rem;
           }
           
-          .console-sidebar {
-            order: -1;
-          }
-          
           .agents-panel, .quick-actions-panel {
             padding: 1rem;
+          }
+          
+          .actions-list {
+            flex-direction: column;
           }
           
           .terminal-body {

@@ -197,6 +197,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
           padding: 4rem 2rem;
           display: flex;
           align-items: center;
+          justify-content: center;
           min-height: calc(100vh - 80px);
           height: calc(100vh - 80px);
         }
@@ -204,10 +205,11 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
         .hero-content {
           max-width: 1200px;
           margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 3rem;
+          display: flex;
+          flex-direction: column;
           align-items: center;
+          text-align: center;
+          gap: 2rem;
         }
 
         .hero-title {
@@ -260,11 +262,12 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
           display: flex;
           justify-content: center;
           align-items: center;
+          margin-top: 1rem;
         }
 
         .hero-icon {
-          font-size: 8rem;
-          opacity: 0.3;
+          font-size: 4rem;
+          opacity: 0.2;
         }
 
 
@@ -305,7 +308,6 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
           }
 
           .hero-content {
-            grid-template-columns: 1fr;
             text-align: center;
           }
 
@@ -316,7 +318,7 @@ const MainWebsite = ({ onNavigateToDashboard }) => {
           .hero-section {
             min-height: calc(100vh - 60px);
             height: calc(100vh - 60px);
-            padding: 2rem 1rem;
+            padding: 2rem 2rem;
           }
         }
 

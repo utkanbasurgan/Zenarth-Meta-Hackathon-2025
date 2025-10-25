@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generateCSVSorterCode } from '../../../02_softwares_daemons/aiService';
+import dataService from '../../../03_datas_daemons/dataService';
 
 const FilesViewer = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -13,18 +14,17 @@ const FilesViewer = () => {
   
 
   useEffect(() => {
-    // Load files from localStorage
-    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+    // Load files from data service
+    const storedFiles = dataService.getUploadedFiles();
     setUploadedFiles(storedFiles);
   }, []);
 
   const removeFile = (fileId) => {
     const updatedFiles = uploadedFiles.filter(file => file.id !== fileId);
     setUploadedFiles(updatedFiles);
-    localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles));
     
-    // Trigger storage event to update other components
-    window.dispatchEvent(new Event('storage'));
+    // Remove from JSON file via data service
+    dataService.removeUploadedFile(fileId);
     
     if (selectedFile && selectedFile.id === fileId) {
       setSelectedFile(null);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generateSimpleChart, generateCSVDirectSort } from '../../../02_softwares_daemons/aiService';
+import dataService from '../../../03_datas_daemons/dataService';
 
 const FileDisplay = ({ fileId }) => {
   const [fileData, setFileData] = useState(null);
@@ -28,8 +29,8 @@ const FileDisplay = ({ fileId }) => {
   const [chartLoading, setChartLoading] = useState(false);
 
   useEffect(() => {
-    // Load file data from localStorage
-    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+    // Load file data from data service
+    const storedFiles = dataService.getUploadedFiles();
     const file = storedFiles.find(f => f.id.toString() === fileId);
     
     if (file) {

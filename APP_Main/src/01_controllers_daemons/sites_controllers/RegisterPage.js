@@ -272,6 +272,13 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
           gap: 1rem;
         }
 
+        @media (max-width: 768px) {
+          .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+        }
+
         .form-group {
           display: flex;
           flex-direction: column;
@@ -290,6 +297,10 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
           border-radius: 8px;
           font-size: 1rem;
           transition: border-color 0.3s;
+          width: 100%;
+          box-sizing: border-box;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .form-group input:focus {
@@ -410,10 +421,16 @@ const RegisterPage = ({ onClose, onNavigateToDashboard }) => {
           .register-modal {
             margin: 1rem;
             padding: 1.5rem;
+            max-width: calc(100vw - 2rem);
           }
 
           .form-row {
             grid-template-columns: 1fr;
+          }
+
+          .form-group input {
+            font-size: 0.9rem;
+            padding: 0.8rem;
           }
         }
       `}</style>
