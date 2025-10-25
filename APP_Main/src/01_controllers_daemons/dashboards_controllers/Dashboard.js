@@ -2,19 +2,37 @@ import React, { useState } from 'react';
 import { geminiApi } from '../../02_softwares_daemons/geminis_softwares';
 import Sidebar from '../../02_softwares_daemons/components/Sidebar';
 import Topbar from '../../02_softwares_daemons/components/Topbar';
-import OverviewPage from './pages/OverviewPage';
-import OverviewStatistics from './pages/OverviewStatistics';
-import OverviewChart from './pages/OverviewChart';
-import OverviewActivities from './pages/OverviewActivities';
-import ProjectsPage from './pages/ProjectsPage';
-import Project1 from './pages/Project1';
-import Project2 from './pages/Project2';
-import Project3 from './pages/Project3';
-import Project4 from './pages/Project4';
-import SettingsPage from './pages/SettingsPage';
-import SettingsProfile from './pages/SettingsProfile';
-import SettingsPreferences from './pages/SettingsPreferences';
-import SettingsSecurity from './pages/SettingsSecurity';
+import {
+  OverviewPage,
+  OverviewStatistics,
+  OverviewChart,
+  OverviewActivities,
+  AnalyzePage,
+  ChatPage
+} from './Overview';
+
+import {
+  ProjectsPage,
+  Project3,
+  Project4,
+  Project5,
+  Project6,
+  ProjectsSubPage1,
+  TasksPage,
+  TeamPage
+} from './Projects';
+
+import {
+  SettingsPage,
+  SettingsProfile,
+  SettingsPreferences,
+  SettingsSecurity
+} from './Settings';
+
+import {
+  FilesUpload
+} from './Files';
+import FileDisplay from './Files/FileDisplay';
 
 const Dashboard = ({ onNavigateToWebsite }) => {
   const [activeSection, setActiveSection] = useState('overview');
@@ -28,6 +46,11 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // CSV Analysis states
   const [csvData, setCsvData] = useState([]);
   const [headers, setHeaders] = useState([]);
+  
+  // Dynamic sources states
+  const [dynamicSources, setDynamicSources] = useState([]);
+  const [showAddSourceModal, setShowAddSourceModal] = useState(false);
+  const [newSourceName, setNewSourceName] = useState('');
   const [fileName, setFileName] = useState('');
   const [aiSearchQuery, setAiSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -39,6 +62,26 @@ const Dashboard = ({ onNavigateToWebsite }) => {
   // AI Search states
   const [searchQuery, setSearchQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
+  
+  // Files states
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+
+  // Load uploaded files from localStorage
+  React.useEffect(() => {
+    const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+    setUploadedFiles(storedFiles);
+  }, []);
+
+  // Listen for storage changes to update files list
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      const storedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+      setUploadedFiles(storedFiles);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const stats = [
     { title: 'Total Projects', value: '12', icon: 'fas fa-folder', color: '#1f1e7a' },
@@ -61,23 +104,59 @@ const Dashboard = ({ onNavigateToWebsite }) => {
     { id: 4, name: 'API Integration', progress: 30, status: 'pending', deadline: '2024-02-28' }
   ];
 
+  // Generate dynamic sub-sections for files
+  const generateFilesSubSections = () => {
+    const baseFiles = [
+      { id: 'upload', name: 'Upload', icon: 'fas fa-cloud-upload-alt' }
+    ];
+    
+    // Add uploaded files as sub-sections
+    const fileSubSections = uploadedFiles.map(file => ({
+      id: `file_${file.id}`,
+      name: file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name,
+      icon: 'fas fa-file-csv',
+      fileId: file.id
+    }));
+    
+    return [...baseFiles, ...fileSubSections];
+  };
+
+  // Function to generate projects sub-sections with dynamic sources
+  const generateProjectsSubSections = () => {
+    const baseProjects = [
+      { id: 'main_log', name: 'main_log.txt', icon: 'fas fa-file-alt' },
+      { id: 'project2', name: 'CSV Sorter', icon: 'fas fa-table' },
+      { id: 'project3', name: 'Code Debugger', icon: 'fas fa-bug' }
+    ];
+    
+    // Add dynamic sources
+    const dynamicSourceItems = dynamicSources.map((source, index) => ({
+      id: `source_${index}`,
+      name: source.name,
+      icon: 'fas fa-file-code',
+      isDynamic: true
+    }));
+    
+    return [...baseProjects, ...dynamicSourceItems];
+  };
+
   // Sub-sections for each main section
   const subSections = {
     overview: [
       { id: 'stats', name: 'Statistics', icon: 'fas fa-chart-bar' },
       { id: 'charts', name: 'Charts', icon: 'fas fa-chart-line' },
-      { id: 'activities', name: 'Activities', icon: 'fas fa-history' }
+      { id: 'activities', name: 'Activities', icon: 'fas fa-history' },
+      { id: 'chat', name: 'Chat', icon: 'fas fa-comments' }
     ],
-    projects: [
-      { id: 'all', name: 'Project 1', icon: 'fas fa-folder' },
-      { id: 'active', name: 'Project 2', icon: 'fas fa-folder' },
-      { id: 'completed', name: 'Project 3', icon: 'fas fa-folder' },
-      { id: 'archived', name: 'Project 4', icon: 'fas fa-folder' }
-    ],
+    projects: generateProjectsSubSections(),
+    files: generateFilesSubSections(),
     settings: [
       { id: 'profile', name: 'Profile', icon: 'fas fa-user' },
       { id: 'preferences', name: 'Preferences', icon: 'fas fa-cog' },
       { id: 'security', name: 'Security', icon: 'fas fa-lock' }
+    ],
+    console: [
+      { id: 'connect', name: 'Connect Console', icon: 'fas fa-terminal' }
     ]
   };
 
@@ -97,6 +176,26 @@ const Dashboard = ({ onNavigateToWebsite }) => {
       case 'pending': return 'Pending';
       default: return 'Unknown';
     }
+  };
+
+  // Handle adding new source
+  const handleAddSource = () => {
+    if (newSourceName.trim()) {
+      const newSource = {
+        id: Date.now(),
+        name: newSourceName.trim(),
+        createdAt: new Date().toISOString()
+      };
+      setDynamicSources(prev => [...prev, newSource]);
+      setNewSourceName('');
+      setShowAddSourceModal(false);
+    }
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setShowAddSourceModal(false);
+    setNewSourceName('');
   };
 
   const parseCSV = (text) => {
@@ -219,26 +318,48 @@ const Dashboard = ({ onNavigateToWebsite }) => {
             return <OverviewChart />;
           case 'activities':
             return <OverviewActivities />;
+          case 'chat':
+            return <ChatPage />;
           default:
             return <OverviewPage stats={stats} recentActivities={recentActivities} />;
         }
       case 'projects':
         // Handle projects subpages
+        if (activeSubSection === 'main_log') {
+          return <Project5 />;
+        } else if (activeSubSection === 'project2') {
+          return <Project2 />;
+        } else if (activeSubSection === 'project3') {
+          return <Project3 />;
+        } else if (activeSubSection.startsWith('source_')) {
+          const sourceIndex = parseInt(activeSubSection.replace('source_', ''));
+          const source = dynamicSources[sourceIndex];
+          return (
+            <div className="source-section">
+              <h2>{source?.name || 'Source'}</h2>
+              <div className="source-content">
+                <p>Source content will be displayed here.</p>
+                <div className="source-info">
+                  <p><strong>Name:</strong> {source?.name}</p>
+                  <p><strong>Created:</strong> {source?.createdAt ? new Date(source.createdAt).toLocaleString() : 'Unknown'}</p>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        return <Project5 />;
+      case 'files':
+        // Handle files subpages
+        if (activeSubSection.startsWith('file_')) {
+          const fileId = activeSubSection.replace('file_', '');
+          return <FileDisplay fileId={fileId} />;
+        }
+        
         switch (activeSubSection) {
-          case 'all':
-            return <Project1 />;
-          case 'active':
-            return <Project2 />;
-          case 'completed':
-            return <Project3 />;
-          case 'archived':
-            return <Project4 />;
+          case 'upload':
+            return <FilesUpload />;
           default:
-            return <ProjectsPage 
-              projects={projects} 
-              getStatusColor={getStatusColor} 
-              getStatusText={getStatusText} 
-            />;
+            return <FilesUpload />;
         }
       case 'settings':
         // Handle settings subpages
@@ -251,6 +372,30 @@ const Dashboard = ({ onNavigateToWebsite }) => {
             return <SettingsSecurity />;
           default:
             return <SettingsPage />;
+        }
+      case 'console':
+        // Handle console subpages
+        switch (activeSubSection) {
+          case 'connect':
+            return <div className="console-section">
+              <h2>Connect Console</h2>
+              <div className="console-content">
+                <p>Console connection interface will be implemented here.</p>
+                <div className="console-terminal">
+                  <pre>Welcome to Zenarth Console</pre>
+                </div>
+              </div>
+            </div>;
+          default:
+            return <div className="console-section">
+              <h2>Connect Console</h2>
+              <div className="console-content">
+                <p>Console connection interface will be implemented here.</p>
+                <div className="console-terminal">
+                  <pre>Welcome to Zenarth Console</pre>
+                </div>
+              </div>
+            </div>;
         }
       default:
         return <OverviewPage stats={stats} recentActivities={recentActivities} />;
@@ -271,6 +416,7 @@ const Dashboard = ({ onNavigateToWebsite }) => {
           activeSubSection={activeSubSection}
           setActiveSubSection={setActiveSubSection}
           subSections={subSections}
+          onAddSource={() => setShowAddSourceModal(true)}
         />
 
         {/* Main Content Area */}
@@ -308,6 +454,39 @@ const Dashboard = ({ onNavigateToWebsite }) => {
         </div>
       )}
 
+      {/* Add Source Modal */}
+      {showAddSourceModal && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add New Source</h3>
+              <button className="modal-close" onClick={handleCloseModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              <label htmlFor="sourceName">Source Name:</label>
+              <input
+                id="sourceName"
+                type="text"
+                value={newSourceName}
+                onChange={(e) => setNewSourceName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddSource()}
+                placeholder="Enter source name..."
+                autoFocus
+              />
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={handleCloseModal}>
+                Cancel
+              </button>
+              <button className="btn-add" onClick={handleAddSource} disabled={!newSourceName.trim()}>
+                Add Source
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .dashboard {

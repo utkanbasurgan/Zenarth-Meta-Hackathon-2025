@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const Project1 = () => {
+const ChatPage = () => {
   const [scriptOutput, setScriptOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const [pythonPrompt, setPythonPrompt] = useState('');
@@ -34,8 +34,8 @@ const Project1 = () => {
   };
 
   return (
-    <div className="team-section">
-      <h2>All Projects</h2>
+    <div className="overview-section">
+      <h2>AI Chat Assistant</h2>
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="pythonPrompt" style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
           Python Prompt:
@@ -56,7 +56,19 @@ const Project1 = () => {
           }}
         />
       </div>
-      <button onClick={runApiScript} disabled={loading || !pythonPrompt.trim()}>
+      <button 
+        onClick={runApiScript} 
+        disabled={loading || !pythonPrompt.trim()}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: loading ? '#ccc' : '#1f1e7a',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          marginBottom: '20px'
+        }}
+      >
         {loading ? 'Running Python...' : 'Run Python Script'}
       </button>
       {scriptOutput && (
@@ -79,4 +91,4 @@ const Project1 = () => {
   );
 };
 
-export default Project1;
+export default ChatPage;

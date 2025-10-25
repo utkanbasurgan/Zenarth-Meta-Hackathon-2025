@@ -1,13 +1,8 @@
-export { default as OverviewPage } from './OverviewPage';
-export { default as OverviewStatistics } from './OverviewStatistics';
-export { default as OverviewChart } from './OverviewChart';
-export { default as OverviewActivities } from './OverviewActivities';
-export { default as ProjectsPage } from './ProjectsPage';
-export { default as Project1 } from './Project1';
-export { default as Project2 } from './Project2';
-export { default as Project3 } from './Project3';
-export { default as Project4 } from './Project4';
-export { default as SettingsPage } from './SettingsPage';
-export { default as SettingsProfile } from './SettingsProfile';
-export { default as SettingsPreferences } from './SettingsPreferences';
-export { default as SettingsSecurity } from './SettingsSecurity';
+// Overview exports
+export * from '../Overview';
+
+// Projects exports
+export * from '../Projects';
+
+// Settings exports
+export * from '../Settings';

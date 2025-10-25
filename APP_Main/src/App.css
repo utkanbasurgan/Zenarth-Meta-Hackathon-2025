@@ -346,3 +346,165 @@
           color: #6b7280;
           font-size: 14px;
         }
+
+        /* Add Source Button */
+        .add-source-item {
+          border: 2px dashed #d1d5db !important;
+          background: transparent !important;
+          color: #6b7280 !important;
+          transition: all 0.3s ease;
+        }
+
+        .add-source-item:hover {
+          border-color: #1f1e7a !important;
+          color: #1f1e7a !important;
+          background: #f8f9ff !important;
+        }
+
+        .add-source-item i {
+          color: #6b7280;
+        }
+
+        .add-source-item:hover i {
+          color: #1f1e7a;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 8px;
+          width: 90%;
+          max-width: 500px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+          margin: 0;
+          color: #1f1e7a;
+          font-size: 20px;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          color: #6b7280;
+          transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+          color: #1f1e7a;
+        }
+
+        .modal-body {
+          padding: 20px;
+        }
+
+        .modal-body label {
+          display: block;
+          margin-bottom: 8px;
+          color: #374151;
+          font-weight: 500;
+        }
+
+        .modal-body input {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+          font-size: 14px;
+          transition: border-color 0.3s ease;
+        }
+
+        .modal-body input:focus {
+          outline: none;
+          border-color: #1f1e7a;
+        }
+
+        .modal-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          padding: 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-cancel {
+          background: #f3f4f6;
+          color: #374151;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+          background: #e5e7eb;
+        }
+
+        .btn-add {
+          background: #1f1e7a;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        .btn-add:hover {
+          background: #2d2b9e;
+        }
+
+        .btn-add:disabled {
+          background: #d1d5db;
+          cursor: not-allowed;
+        }
+
+        /* Source Section */
+        .source-section {
+          padding: 20px;
+        }
+
+        .source-content {
+          margin-top: 20px;
+          padding: 20px;
+          background: #f9fafb;
+          border-radius: 8px;
+        }
+
+        .source-info {
+          margin-top: 15px;
+          padding: 15px;
+          background: white;
+          border-radius: 4px;
+          border: 1px solid #e5e7eb;
+        }
+
+        .source-info p {
+          margin: 8px 0;
+          color: #374151;
+        }

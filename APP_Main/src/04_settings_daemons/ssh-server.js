@@ -78,9 +78,49 @@ app.post('/api/run-python-command', async (req, res) => {
     // Set the API directory path
     const apiPath = '/Users/utkan.basurgan/Main/1. Works Files/2. Gits Works/Zenarth-Meta-Hackathon-2025/APP_Api';
     
-    // Execute the command from the API directory with virtual environment
+    // Check if this is a main_api.py command with complex prompts
+    if (command.includes('main_api.py') && command.includes('"')) {
+      // Extract the prompt from the command
+      const promptMatch = command.match(/main_api\.py\s+"([^"]+)"/);
+      if (promptMatch) {
+        const prompt = promptMatch[1];
+        
+        // Create a temporary file for the prompt
+        const tempPromptFile = path.join(apiPath, 'temp_prompt.txt');
+        fs.writeFileSync(tempPromptFile, prompt);
+        
+        // Execute with the prompt file
+        const fullCommand = `cd "${apiPath}" && source venv/bin/activate && python3 main_api.py "$(cat temp_prompt.txt)"`;
+        console.log('Executing command with prompt file:', fullCommand);
+        
+        const { stdout, stderr } = await execAsync(fullCommand, { 
+          shell: '/bin/bash',
+          timeout: 30000
+        });
+        
+        // Clean up the temporary file
+        if (fs.existsSync(tempPromptFile)) {
+          fs.unlinkSync(tempPromptFile);
+        }
+        
+        if (stderr) {
+          console.error('Python command stderr:', stderr);
+        }
+        
+        const output = stdout || stderr || 'No output from command';
+        res.send(output);
+        return;
+      }
+    }
+    
+    // For other commands, execute directly
     const fullCommand = `cd "${apiPath}" && source venv/bin/activate && ${command}`;
-    const { stdout, stderr } = await execAsync(fullCommand, { shell: '/bin/bash' });
+    console.log('Executing command:', fullCommand);
+    
+    const { stdout, stderr } = await execAsync(fullCommand, { 
+      shell: '/bin/bash',
+      timeout: 30000 // 30 second timeout
+    });
     
     if (stderr) {
       console.error('Python command stderr:', stderr);

@@ -6,7 +6,8 @@ const Sidebar = ({
   setActiveSection, 
   activeSubSection, 
   setActiveSubSection, 
-  subSections 
+  subSections,
+  onAddSource 
 }) => {
   return (
     <>
@@ -42,6 +43,16 @@ const Sidebar = ({
             <span>Projects</span>
           </button>
           
+          <button 
+            className={`nav-item ${activeSection === 'files' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSection('files');
+              setActiveSubSection(subSections.files?.[0]?.id || '');
+            }}
+          >
+            <i className="fas fa-file-upload"></i>
+            <span>Files</span>
+          </button>
           
           <button 
             className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}
@@ -52,6 +63,17 @@ const Sidebar = ({
           >
             <i className="fas fa-cog"></i>
             <span>Settings</span>
+          </button>
+          
+          <button 
+            className={`nav-item ${activeSection === 'console' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSection('console');
+              setActiveSubSection(subSections.console?.[0]?.id || '');
+            }}
+          >
+            <i className="fas fa-terminal"></i>
+            <span>Console</span>
           </button>
         </nav>
         
@@ -69,6 +91,12 @@ const Sidebar = ({
         </div>
         
         <nav className="sub-nav">
+          {activeSection === 'projects' && onAddSource && (
+            <button className="sub-nav-item add-source-item" onClick={onAddSource} title="Add Source">
+              <i className="fas fa-plus"></i>
+              <span>Add Source</span>
+            </button>
+          )}
           {subSections[activeSection]?.map(subSection => (
             <button 
               key={subSection.id}
