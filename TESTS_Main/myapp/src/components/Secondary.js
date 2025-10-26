@@ -15,8 +15,7 @@ function Secondary()
 
       try
       {
-        const undefinedObject = null;
-        const errorValue = undefinedObject && (undefinedObject.someProperty || null);
+        const errorValue = null;
 
         console.log('This will never execute:', errorValue);
       }
@@ -88,3 +87,7 @@ function Secondary()
 }
 
 export default Secondary;
+
+src/components/Secondary.js-10
+- const errorValue = undefinedObject && (undefinedObject.someProperty || null);
++ const errorValue = null;

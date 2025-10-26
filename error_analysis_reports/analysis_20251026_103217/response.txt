@@ -17,8 +17,7 @@ function Secondary()
 
       try
       {
-        const undefinedObject = null;
-        const errorValue = undefinedObject && undefinedObject.someProperty; // <--- ADDED NULL CHECK
+        const errorValue = null;
 
         console.log('This will never execute:', errorValue);
       }
@@ -91,13 +90,17 @@ function Secondary()
 
 export default Secondary;
 
+src/components/Secondary.js-10
+- const errorValue = undefinedObject && (undefinedObject.someProperty || null);
++ const errorValue = null;
+
 CHANGES
-src/components/Secondary.js-14
-- const errorValue = undefinedObject.someProperty.that.does.not.exist;
-+ const errorValue = undefinedObject && undefinedObject.someProperty;
+src/components/Secondary.js-10
+- const errorValue = undefinedObject && (undefinedObject.someProperty || null);
++ const errorValue = null;
 
 Root of the problem:
-The code attempts to access a property on an object that is null, causing a "null is not an object" error.
+The code attempts to access a property on an object that is explicitly set to null, causing a "null is not an object" error.
 
 How to fix:
-Add a null check before accessing properties on the undefinedObject.
+To prevent this error, we can simply assign null to the errorValue variable instead of trying to access properties on it.
