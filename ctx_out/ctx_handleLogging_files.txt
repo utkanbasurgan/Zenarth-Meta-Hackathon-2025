@@ -17,7 +17,7 @@ function Secondary()
       try
       {
         const undefinedObject = null;
-        const errorValue = undefinedObject && undefinedObject.someProperty;
+        const errorValue = undefinedObject.someProperty.that.does.not.exist;
 
         console.log('This will never execute:', errorValue);
       }

@@ -3,13 +3,9 @@ import os
 from pathlib import Path
 from typing import Iterable, List, Set
 
-# Path marker and top-level defaults (edit these instead of using CLI args)
-PATH = "APP_Api/find_func.py"
+
 PROJECT_PATH = "TESTS_Main\myapp"
 FUNCTION = "handleLogging"
-
-
-DEFAULT_OUT_DIR = Path("ctx_out")
 
 # ---------- Ayarlar ----------
 DEFAULT_EXTS = (".js", ".jsx", ".ts", ".tsx")
@@ -182,29 +178,22 @@ def collect_context(
 
 
 # ---------- CLI ----------
-def main():
-    """Run collect_context using top-level constants.
-
-    Edit PROJECT_PATH, FUNCTION or set DEFAULT_OUT_DIR above to change behavior.
-    """
+if __name__ == "__main__":
     print("=== React/TS Fonksiyon Tarayıcı ===")
     project_root = Path(PROJECT_PATH).resolve()
     if not project_root.exists():
         print("❌ Proje klasörü bulunamadı.")
-        return 1
+        exit(1)
 
     target = FUNCTION.strip()
     if not target:
         print("❌ Geçerli bir isim girilmedi.")
-        return 1
+        exit(1)
 
-    out_path = DEFAULT_OUT_DIR / f"ctx_{target}_files.txt"
+    default_out = Path("ctx_out") / f"ctx_{target}_files.txt"
+    out_path_input = input(f"💾 Çıktı dosya yolu (varsayılan: {default_out}): ").strip()
+    out_path = Path(out_path_input) if out_path_input else default_out
 
     print("\n[1/2] Dosyalar taranıyor...")
     count = collect_context(project_root, target, out_path)
     print(f"[2/2] {count} dosya bulundu ve kaydedildi → {out_path}")
-    return 0
-
-
-if __name__ == "__main__":
-    main()

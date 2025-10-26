@@ -1,5 +1,3 @@
-UPDATED FILES
-src/components/Secondary.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { writeDenemeToLog, readLogFile, logError } from '../logService';
@@ -18,7 +16,7 @@ function Secondary()
       try
       {
         const undefinedObject = null;
-        const errorValue = undefinedObject && undefinedObject.someProperty;
+        const errorValue = undefinedObject && (undefinedObject.someProperty || null);
 
         console.log('This will never execute:', errorValue);
       }
@@ -90,14 +88,3 @@ function Secondary()
 }
 
 export default Secondary;
-
-CHANGES
-src/components/Secondary.js-14
-- const errorValue = undefinedObject && undefinedObject.someProperty;
-+ const errorValue = (undefinedObject || {}).someProperty;
-
-Root of the problem:
-The code attempts to access a property 'someProperty' on an object that is null, causing a runtime error.
-
-How to fix:
-Add a null check for the object before accessing its properties.

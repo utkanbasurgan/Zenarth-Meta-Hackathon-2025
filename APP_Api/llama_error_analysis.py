@@ -5,36 +5,15 @@ from datetime import datetime
 import json
 import re
 from python_api import connect_ssh, send_prompt
-import argparse
-
-# Top-level defaults (importable and overrideable)
-DEFAULT_HOST = "83.104.230.246"
-DEFAULT_PORT = 31103
-DEFAULT_USER = "root"
-DEFAULT_KEY_PATH = "./APP_Api/llama_ssh.txt"
-DEFAULT_PASSFILE_PATH = "./APP_Api/passphrase.txt"
-
-DEFAULT_LOG_PATH = "./TESTS_Main/myapp/src/log.txt"
-DEFAULT_CODES_FILE = r"ctx_out/ctx_handleLogging_files.txt"
-DEFAULT_PROMPT_FORMAT = "APP_Api/prompt_format.txt"
-DEFAULT_SYSTEM_PROMPT = "APP_Api/system_prompt.txt"
-
-DEFAULT_MODEL = "llama3.1:8b"
-DEFAULT_OUT_DIR = "error_analysis_reports"
-DEFAULT_TEMPERATURE = 0.1
-DEFAULT_NUM_PREDICT = 2048
-DEFAULT_TIMEOUT = 600
 
 
 # =========================================================
 # 🔧 Yardımcı Fonksiyonlar
 # =========================================================
 
-
 def _read_text(p: Path) -> str:
     """Belirtilen dosyayı UTF-8 ile okur, hata varsa atlar."""
     return p.read_text(encoding="utf-8", errors="ignore")
-
 
 def _write_text(p: Path, text: str) -> None:
     """Metni belirtilen dosyaya yazar, gerekirse klasörleri oluşturur."""
@@ -64,11 +43,11 @@ def _write_text(p: Path, text: str) -> None:
 _HEADER_RE = re.compile(r"^(?P<file>.+?)\s*-\s*\(?(?P<line>\d+)\)?\s*$")
 
 _ROOT_RE = re.compile(r"^Root of the problem:\s*$", re.IGNORECASE)
-_FIX_RE = re.compile(r"^How to fix:\s*$", re.IGNORECASE)
+_FIX_RE  = re.compile(r"^How to fix:\s*$", re.IGNORECASE)
 
 # Bölüm başlıkları
 _UPDATED_FILES_RE = re.compile(r"^UPDATED FILES\s*$", re.IGNORECASE)
-_CHANGES_RE = re.compile(r"^CHANGES\s*$", re.IGNORECASE)
+_CHANGES_RE       = re.compile(r"^CHANGES\s*$", re.IGNORECASE)
 
 # UPDATED FILES altında dosya yolu satırını tanıma:
 # - boşlukla başlamaz
@@ -76,9 +55,7 @@ _CHANGES_RE = re.compile(r"^CHANGES\s*$", re.IGNORECASE)
 _PATH_LINE_RE = re.compile(r"^[^\s].+\.(?:js|jsx|ts|tsx)$")
 
 
-def _parse_updated_files(
-    lines: list[str], start_idx: int
-) -> tuple[dict[str, str], int]:
+def _parse_updated_files(lines: list[str], start_idx: int) -> tuple[dict[str, str], int]:
     """
     UPDATED FILES bölümünden dosya->tam içerik haritasını çıkarır.
     start_idx: 'UPDATED FILES' satırının *sonraki* satır indeksi.
@@ -230,27 +207,15 @@ def _parse_model_response_to_struct(response_text: str) -> dict:
 
             # REMOVE
             if stripped.startswith("- "):
-                code_str = (
-                    line[line.index("- ") + 2 :]
-                    if "- " in line
-                    else line.lstrip("-").lstrip()
-                )
-                code_change[current_file]["changes"][str(current_line)][
-                    "remove"
-                ].append(code_str)
+                code_str = line[line.index("- ") + 2 :] if "- " in line else line.lstrip("-").lstrip()
+                code_change[current_file]["changes"][str(current_line)]["remove"].append(code_str)
                 i += 1
                 continue
 
             # ADD
             if stripped.startswith("+ "):
-                code_str = (
-                    line[line.index("+ ") + 2 :]
-                    if "+ " in line
-                    else line.lstrip("+").lstrip()
-                )
-                code_change[current_file]["changes"][str(current_line)]["add"].append(
-                    code_str
-                )
+                code_str = line[line.index("+ ") + 2 :] if "+ " in line else line.lstrip("+").lstrip()
+                code_change[current_file]["changes"][str(current_line)]["add"].append(code_str)
                 i += 1
                 continue
 
@@ -293,7 +258,6 @@ def _parse_model_response_to_struct(response_text: str) -> dict:
 # =========================================================
 # 🤖 Ana Fonksiyon: analyze_errors_with_llama
 # =========================================================
-
 
 def analyze_errors_with_llama(
     ssh,
@@ -353,9 +317,7 @@ def analyze_errors_with_llama(
     prompt_json_path = session_dir / "prompt.json"
     _write_text(prompt_json_path, json.dumps(prompt_json, ensure_ascii=False, indent=2))
 
-    print(
-        f"[*] Sending prompt ({len(prompt)} chars) using codes file: {codes_file} ..."
-    )
+    print(f"[*] Sending prompt ({len(prompt)} chars) using codes file: {codes_file} ...")
 
     res = send_prompt(
         ssh,
@@ -372,9 +334,7 @@ def analyze_errors_with_llama(
 
     response_struct = _parse_model_response_to_struct(response_text)
     response_json_path = session_dir / "response.json"
-    _write_text(
-        response_json_path, json.dumps(response_struct, ensure_ascii=False, indent=2)
-    )
+    _write_text(response_json_path, json.dumps(response_struct, ensure_ascii=False, indent=2))
 
     meta = {
         "log_file": str(log_file),
@@ -386,9 +346,7 @@ def analyze_errors_with_llama(
         "response_file_json": str(response_json_path),
         "stderr": res.get("stderr", ""),
     }
-    _write_text(
-        session_dir / "meta.json", json.dumps(meta, ensure_ascii=False, indent=2)
-    )
+    _write_text(session_dir / "meta.json", json.dumps(meta, ensure_ascii=False, indent=2))
 
     print(f"[✓] Analysis complete. Reports saved to: {session_dir}")
     return response_struct
@@ -398,50 +356,28 @@ def analyze_errors_with_llama(
 # 🧪 CLI (doğrudan çalıştırmak için)
 # =========================================================
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Analyze errors with Llama (via SSH)")
-    ap.add_argument("--host", default=DEFAULT_HOST)
-    ap.add_argument("--port", default=DEFAULT_PORT, type=int)
-    ap.add_argument("--user", default=DEFAULT_USER)
-    ap.add_argument("--key", default=DEFAULT_KEY_PATH)
-    ap.add_argument("--passfile", default=DEFAULT_PASSFILE_PATH)
+    HOST = "83.104.230.246"
+    PORT = 31103
+    USER = "root"
+    KEY_PATH = "./APP_Api/llama_ssh.txt"
+    PASSFILE_PATH = "./App_api/passphrase.txt"
 
-    ap.add_argument("--log-path", default=DEFAULT_LOG_PATH)
-    ap.add_argument("--codes-file", default=DEFAULT_CODES_FILE)
-    ap.add_argument("--prompt-format", default=DEFAULT_PROMPT_FORMAT)
-    ap.add_argument(
-        "--system-prompt", default=None, help="Optional system prompt file path"
-    )
+    LOG_PATH = "./TESTS_Main/myapp/src/log.txt"
+    CODES_FILE = r"ctx_out/ctx_handleLogging_files.txt"
 
-    ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
-    ap.add_argument("--temperature", default=DEFAULT_TEMPERATURE, type=float)
-    ap.add_argument("--num-predict", default=DEFAULT_NUM_PREDICT, type=int)
-    ap.add_argument("--timeout", default=DEFAULT_TIMEOUT, type=int)
+    system_prompt = Path("APP_Api/system_prompt.txt").read_text(encoding="utf-8")
 
-    args = ap.parse_args()
-
-    system_prompt = None
-    if args.system_prompt:
-        spath = Path(args.system_prompt)
-        if spath.exists():
-            system_prompt = spath.read_text(encoding="utf-8")
-    else:
-        spath = Path(DEFAULT_SYSTEM_PROMPT)
-        if spath.exists():
-            system_prompt = spath.read_text(encoding="utf-8")
-
-    ssh = connect_ssh(args.host, args.port, args.user, args.key, args.passfile)
+    ssh = connect_ssh(HOST, PORT, USER, KEY_PATH, PASSFILE_PATH)
     try:
         analyze_errors_with_llama(
             ssh,
-            log_path=args.log_path,
-            codes_file_path=args.codes_file,
-            prompt_format_path=args.prompt_format,
-            model=args.model,
-            out_dir=args.out_dir,
-            temperature=args.temperature,
-            num_predict=args.num_predict,
-            timeout=args.timeout,
+            log_path=LOG_PATH,
+            codes_file_path=CODES_FILE,
+            prompt_format_path="APP_Api/prompt_format.txt",
+            model="llama3.1:8b",
+            temperature=0.1,
+            num_predict=2048,
+            timeout=600,
             system_prompt=system_prompt,
         )
     finally:
