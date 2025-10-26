@@ -10,31 +10,9 @@ Zen AI offers an intelligent, self-healing web monitoring system based on Llama 
 
 This structure enables Zen AI to transform web applications into intelligent systems that can self-repair, protect users from errors instantly, and require minimal developer intervention. This way, both user satisfaction increases and the developer's workload on the system decreases.
 
-## Tech Stack
-
-TO BE EXPLAINED
-
-* Python
-* Ollama
-* Llama 3.1
-
 ## Infrastructure
 
-TO BE EXPLAINED
-
-1. We hosted LLAMA model on Azure GPU VM with A100 GPU.
-2. We used Ollama for inference over different models
-
-## LLAMA Model
-
-TO BE EXPLAINED
-
-LLAMA3.1-70b instruct finetune and LLAMA3.1-8b instruct finetune models were used for the project.
-LLAMA3.1-8b instruct finetune model was used for smaller tasks and agents while LLAMA3.1-70b instruct finetune model was used for larger tasks and agents.
-
-## How to Run the Code?
-
-TO BE EXPLAINED
+LLAMA3.1-8b hosted on vast.ai
 
 1. Clone the repository
 2. Install the requirements - ollama
@@ -46,8 +24,6 @@ TO BE EXPLAINED
 2. Batuhan Odçıkın
 3. Kamran Yağız Yaldız
 4. Burak Yunus Belen
-
-Note: For the sake of privacy, we have not included the dataset and the prompts in this repository. Please reach out to us for the same.
 
 ## Codebase Structure
 
