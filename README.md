@@ -1,50 +1,46 @@
 # Llama Hackathon 2025 - Zenarth AI Team
 
-## Problem Tanımı
+## Problem Definition
 
-Küçük ölçekli girişimler ve tek başına çalışan geliştiriciler, web uygulamalarını 7/24 izleyebilecek kaynaklara genellikle sahip değildir. Beklenmedik hatalar örneğin bir servis kesintisi, bozulmuş görseller veya hatalı kullanıcı ara yüzü öğeleri çoğu zaman fark edilmeden saatlerce sistemde kalabilir. Bu durum kullanıcı deneyimini olumsuz etkiler, gelir kaybına ve itibar zedelenmesine yol açar. Mevcut izleme araçları genellikle sadece hatayı tespit etmekle sınırlıdır; bu hataları gerçek zamanlı olarak düzeltme veya kullanıcıya düzgün bir şekilde yansıtma kabiliyetine sahip değildir. Sonuç olarak, geliştiriciler hâlâ manuel müdahaleye ve zaman kaybına bağımlı kalmakta, bu da ciddi verimsizlik yaratmaktadır.
+Small-scale startups and individual developers often lack the resources to monitor their web applications 24/7. Unexpected errors such as service outages, broken images, or faulty user interface elements can remain undetected in the system for hours. This situation negatively affects user experience, leading to revenue loss and reputation damage. Current monitoring tools are generally limited to detecting errors; they lack the ability to fix these errors in real-time or reflect them properly to users. As a result, developers are still dependent on manual intervention and time loss, creating serious inefficiency.
 
-## Çözüm
+## Solution
 
-Zen AI, küçük ekipler ve bireysel geliştiriciler için tasarlanmış Llama 3.1-8B tabanlı, akıllı, kendini iyileştirebilen bir web izleme sistemi sunar. Zen AI, web uygulamasını her 10 saniyede bir aktif olarak tarar, olası hataları tespit eder ve bunları üç kategoriye ayırır: basit, orta, ve kritik. Basit hatalar sistem tarafından otomatik olarak düzeltilir, böylece kullanıcı deneyimi kesintisiz devam eder ve küçük problemler için geliştiricinin vaktini harcamasına gerek kalmaz. Orta düzeydeki hatalarda, Zen AI ilgili alanı otomatik olarak “Bakımda” veya “Düzeltiliyor” mesajıyla kamufle eder ve geliştiriciye anında bildirim gönderir, kullanıcı ise hata mesajını görmediği için daha olumlu bir deneyim ile karşılaşır. Kritik hatalar ise uygulamanın temel işlevselliğini etkileyen durumlarda “error” olarak bırakılır ve geliştiriciye acil uyarı iletilir.
+Zen AI offers an intelligent, self-healing web monitoring system based on Llama 3.1-8B, designed for small teams and individual developers. Zen AI actively scans the web application every 10 seconds, detects potential errors, and categorizes them into three categories: simple, medium, and critical. Simple errors are automatically fixed by the system, ensuring uninterrupted user experience and eliminating the need for developers to spend time on minor problems. For medium-level errors, Zen AI automatically masks the relevant area with "Under Maintenance" or "Fixing" messages and sends instant notifications to developers, while users have a more positive experience as they don't see error messages. Critical errors that affect the core functionality of the application are left as "error" and urgent alerts are sent to developers.
 
-
-
-Bu yapı sayesinde Zen AI, web uygulamalarını kendi kendini onarabilen, hata anında kullanıcıyı koruyan ve geliştiriciye minimum müdahale gerektiren akıllı sistemler hâline getirir. Böylece hem kullanıcı memnuniyeti artar hem de geliştiricinin sistem üzerindeki yükü azalır.
+This structure enables Zen AI to transform web applications into intelligent systems that can self-repair, protect users from errors instantly, and require minimal developer intervention. This way, both user satisfaction increases and the developer's workload on the system decreases.
 
 ## Tech Stack
 
-ANLATILACAK
+TO BE EXPLAINED
 
 * Python
 * Ollama
 * Llama 3.1
 
-## Altyapı
+## Infrastructure
 
-ANLATILACAK
+TO BE EXPLAINED
 
 1. We hosted LLAMA model on Azure GPU VM with A100 GPU.
 2. We used Ollama for inference over different models
 
-## LLAMA Modeli
+## LLAMA Model
 
-ANLATILACAK
+TO BE EXPLAINED
 
 LLAMA3.1-70b instruct finetune and LLAMA3.1-8b instruct finetune models were used for the project.
 LLAMA3.1-8b instruct finetune model was used for smaller tasks and agents while LLAMA3.1-70b instruct finetune model was used for larger tasks and agents.
 
+## How to Run the Code?
 
-
-## Kod Nasıl Çalıştırılır?
-
-ANLATILACAK
+TO BE EXPLAINED
 
 1. Clone the repository
 2. Install the requirements - ollama
-3. Open the juptyer notebook fill the prompts and system instructions in the code and run the code
+3. Open the jupyter notebook fill the prompts and system instructions in the code and run the code
 
-## Takım Üyeleri
+## Team Members
 
 1. Utkan Başurgan
 2. Batuhan Odçıkın
@@ -52,3 +48,57 @@ ANLATILACAK
 4. Burak Yunus Belen
 
 Note: For the sake of privacy, we have not included the dataset and the prompts in this repository. Please reach out to us for the same.
+
+## Codebase Structure
+
+The Zenarth AI system consists of several interconnected components that work together to provide intelligent web monitoring and self-healing capabilities:
+
+### Core Components
+
+#### 1. **APP_Api/** - AI Analysis Engine
+- **`main.py`**: Main orchestrator that runs the complete pipeline (Collect → Analyze → Apply)
+- **`llama_error_analysis.py`**: Core AI analysis module that processes error logs and generates fixes using Llama 3.1
+- **`find_func.py`**: Context collection module that gathers relevant code files for analysis
+- **`apply_code_changes.py`**: Code application module that implements AI-generated fixes
+- **`python_api.py`**: SSH connection handler for remote Llama model execution
+- **Configuration files**: `system_prompt.txt`, `prompt_format.txt`, `model_config.txt`
+
+#### 2. **APP_Backend/** - Continuous Monitoring Service
+- **`MainRunner.py`**: Continuous monitoring daemon that runs every 10 seconds
+- Executes the AI analysis pipeline automatically
+- Monitors target applications and triggers fixes when errors are detected
+
+#### 3. **APP_Main/** - Web Dashboard Interface
+- **React-based dashboard** for monitoring and managing the AI system
+- **`src/01_controllers_daemons/`**: Main UI controllers
+  - `dashboards_controllers/`: Dashboard components (Console, Management, Overview, Settings)
+  - `sites_controllers/`: Website and authentication components
+- **`src/02_softwares_daemons/`**: AI service integration
+- **`src/03_datas_daemons/`**: Data management and session handling
+- **`src/04_settings_daemons/`**: SSH and configuration management
+
+#### 4. **TESTS_Main/** - Test Applications
+- **`myapp/`**, **`myapp3/`**, **`test/`**: Sample React applications used for testing
+- These applications serve as targets for the AI monitoring system
+- Include logging mechanisms to capture errors for analysis
+
+### How the System Works
+
+1. **Monitoring Phase**: The `MainRunner.py` continuously monitors target applications every 10 seconds
+2. **Error Detection**: When errors are detected in application logs, the system triggers the analysis pipeline
+3. **Context Collection**: `find_func.py` gathers relevant code files and context around the error
+4. **AI Analysis**: `llama_error_analysis.py` sends the context to Llama 3.1 model via SSH for analysis
+5. **Fix Generation**: The AI model analyzes the error and generates appropriate fixes
+6. **Code Application**: `apply_code_changes.py` applies the generated fixes to the target application
+7. **Dashboard Monitoring**: The web interface provides real-time monitoring and management capabilities
+
+### Key Features
+
+- **Self-healing**: Automatically fixes simple errors without developer intervention
+- **Smart masking**: Covers medium-level errors with maintenance messages
+- **Critical alerts**: Notifies developers immediately for critical issues
+- **Real-time monitoring**: Continuous 10-second monitoring cycle
+- **Remote AI processing**: Uses Azure GPU VM with A100 GPU for Llama model inference
+- **Comprehensive logging**: Detailed error analysis reports stored in `error_analysis_reports/`
+
+The system is designed to minimize developer workload while ensuring optimal user experience through intelligent error handling and automatic remediation.
