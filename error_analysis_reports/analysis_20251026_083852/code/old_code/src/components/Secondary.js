@@ -16,7 +16,7 @@ function Secondary()
       try
       {
         const undefinedObject = null;
-        const errorValue = undefinedObject && (undefinedObject.someProperty || null);
+        const errorValue = undefinedObject && undefinedObject.someProperty; // <--- ADDED NULL CHECK
 
         console.log('This will never execute:', errorValue);
       }

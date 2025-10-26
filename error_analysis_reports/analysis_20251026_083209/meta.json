@@ -1,0 +1,10 @@
+{
+  "log_file": "C:\\Users\\batuh\\OneDrive\\Masaüstü\\Hackathon\\Zenarth-Meta-Hackathon-2025\\TESTS_Main\\myapp\\src\\log.txt",
+  "codes_file": "C:\\Users\\batuh\\OneDrive\\Masaüstü\\Hackathon\\Zenarth-Meta-Hackathon-2025\\ctx_out\\ctx_handleLogging_files.txt",
+  "model": "llama3.1:8b",
+  "prompt_file_txt": "error_analysis_reports\\analysis_20251026_083209\\full_prompt.txt",
+  "prompt_file_json": "error_analysis_reports\\analysis_20251026_083209\\prompt.json",
+  "response_file_txt": "error_analysis_reports\\analysis_20251026_083209\\response.txt",
+  "response_file_json": "error_analysis_reports\\analysis_20251026_083209\\response.json",
+  "stderr": ""
+}

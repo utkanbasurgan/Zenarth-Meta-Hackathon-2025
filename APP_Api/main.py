@@ -2,14 +2,10 @@
 from __future__ import annotations
 import json
 import sys
+import re
 from pathlib import Path
 from typing import Optional
-
-# !!! Bu değişkeni değiştirerek aranacak fonksiyonu belirleyin
 from datetime import datetime
-from typing import Optional
-from pathlib import Path
-import json
 
 from python_api import connect_ssh, Config
 from llama_error_analysis import analyze_errors_with_llama
@@ -41,15 +37,31 @@ from apply_code_changes import apply_code_overwrite
 from python_api import connect_ssh, Config  # Config modülünü import et
 
 
-def find_latest_analysis_dir(reports_root: Path) -> Optional[Path]:
-    if not reports_root.exists():
+def find_latest_analysis_dir(root_dir: str | Path) -> Path | None:
+    """En son oluşturulan analysis_* klasörünü bul.
+
+    Args:
+        root_dir: Analiz klasörlerinin bulunduğu ana dizin
+
+    Returns:
+        En son oluşturulan analysis_* klasörünün yolu, ya da None
+    """
+    root_dir = Path(root_dir)
+    if not root_dir.exists():
         return None
-    dirs = [
-        d
-        for d in reports_root.iterdir()
-        if d.is_dir() and d.name.startswith("analysis_")
+
+    # analysis_YYYYMMDD_HHMMSS formatındaki klasörleri bul
+    pattern = re.compile(r"analysis_\d{8}_\d{6}")
+    analysis_dirs = [
+        d for d in root_dir.iterdir() if d.is_dir() and pattern.match(d.name)
     ]
-    return max(dirs, key=lambda p: p.stat().st_mtime) if dirs else None
+
+    if not analysis_dirs:
+        return None
+
+    # Klasör adına göre sırala (en son tarih/saat sona gelir)
+    latest = sorted(analysis_dirs)[-1]
+    return latest
 
 
 def run_pipeline(
@@ -59,6 +71,7 @@ def run_pipeline(
     dry_run: bool = False,
     window: int = 0,
     use_overwrite: bool = True,
+    target_func="",
 ) -> None:
     """Model error analizi pipeline'ını çalıştır.
 
@@ -85,9 +98,9 @@ def run_pipeline(
 
     # 1) Topla
     if do_collect:
-        print(f"[1/3] Collect → {project_root}  target={TARGET}")
+        print(f"[1/3] Collect → {project_root}  target={target_func}")
         exts = (".js", ".jsx", ".ts", ".tsx")  # Temel dosya türleri
-        count = collect_context(project_root, TARGET, codes_out, exts=exts)
+        count = collect_context(project_root, target_func, codes_out, exts=exts)
         print(f"    ✓ {count} dosya → {codes_out}")
 
     # 2) Analiz
@@ -115,22 +128,35 @@ def run_pipeline(
         print(f"[3/3] Apply → son analiz klasörü aranıyor: {out_dir}")
         latest = find_latest_analysis_dir(out_dir)
         if not latest:
-            raise FileNotFoundError(f"Under {out_dir} no analysis_* folder found.")
+            raise FileNotFoundError(
+                f"❌ {out_dir} klasöründe analysis_* formatında klasör bulunamadı.\n"
+                "   Önce bir analiz çalıştırmanız gerekiyor."
+            )
         response_json = latest / "response.json"
         if not response_json.exists():
-            raise FileNotFoundError(f"{response_json} not found.")
-        print(f"    using: {response_json}")
+            raise FileNotFoundError(
+                f"❌ Response dosyası bulunamadı: {response_json}\n"
+                "   Bu klasörde bir analiz tamamlanmamış olabilir."
+            )
+        print(f"✓ Son analiz kullanılıyor: {latest.name}")
+        print(f"  Response dosyası: {response_json.name}")
 
         if use_overwrite:
             # ✅ Tam dosya overwrite modu (JSON'daki code_change.{path}.code)
             updated = apply_code_overwrite(
-                response_path=response_json,
-                repo_root=project_root,
+                response_path=response_json,  # response.json konumu
+                repo_root=project_root,  # kod değişikliği için proje kökü
             )
             summary = {"mode": "overwrite", "updated_files": updated}
+
+            # Son analiz klasöründe old_code ve new_code kayıtları var
+            if updated:
+                print("\nDosya kopyaları şuraya kaydedildi:")
+                print(f"  Eski kodlar → {latest}/code/old_code/")
+                print(f"  Yeni kodlar → {latest}/code/new_code/")
         else:
             raise SystemExit(
-                "Diff mode disabled. Run with --overwrite to use full-file overwrite."
+                "Diff modu devre dışı. Tam dosya güncelleme için --overwrite kullanın."
             )
 
         summary_path = latest / (
@@ -163,8 +189,9 @@ if __name__ == "__main__":
     run_pipeline(
         do_collect=True,  # Kod toplama fazı
         do_analyze=True,  # LLM analiz fazı
-        do_apply=False,  # Kod değişikliği uygulama fazı
+        do_apply=True,  # Kod değişikliği uygulama fazı
         dry_run=False,  # Değişiklikleri önizleme (apply fazında)
         window=0,  # Kaç satır context kullanılacak (apply fazında)
         use_overwrite=True,  # Tam dosya güncelleme modu kullan (apply fazında)
+        target_func="handleLogging",
     )
