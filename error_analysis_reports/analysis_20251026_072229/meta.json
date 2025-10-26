@@ -1,0 +1,10 @@
+{
+  "log_file": "TESTS_Main\\myapp\\src\\log.txt",
+  "codes_file": "ctx_out\\ctx_handleLogging_files.txt",
+  "model": "llama3.1:8b",
+  "prompt_file_txt": "error_analysis_reports\\analysis_20251026_072229\\full_prompt.txt",
+  "prompt_file_json": "error_analysis_reports\\analysis_20251026_072229\\prompt.json",
+  "response_file_txt": "error_analysis_reports\\analysis_20251026_072229\\response.txt",
+  "response_file_json": "error_analysis_reports\\analysis_20251026_072229\\response.json",
+  "stderr": ""
+}

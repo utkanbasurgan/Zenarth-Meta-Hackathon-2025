@@ -1,0 +1,33 @@
+# Model and API Settings
+# Edit these values to change model behavior
+# All settings must be defined here - no defaults in code
+
+[API]
+API_URL=http://127.0.0.1:11434/api/generate
+MODEL=llama3.1:8b
+TEMPERATURE=0.1
+NUM_PREDICT=2048
+KEEP_ALIVE=30m
+TIMEOUT=600
+
+[SSH]
+HOST=83.104.230.246
+PORT=31103
+USER=root
+KEY_PATH=./APP_Api/llama_ssh.txt
+PASSFILE_PATH=./APP_Api/passphrase.txt
+
+[PATHS]
+LOG_PATH=./TESTS_Main/myapp/src/log.txt
+CODES_FILE=ctx_out/ctx_handleLogging_files.txt
+PROMPT_FORMAT=APP_Api/prompt_format.txt
+SYSTEM_PROMPT=APP_Api/system_prompt.txt
+ERROR_REPORTS=error_analysis_reports
+
+[PROJECT]
+PROJECT_ROOT=TESTS_Main/myapp
+TARGET_FUNCTION=style
+
+[PROMPTS]
+DEFAULT_PROMPT=Hello World?
+ERROR_ANALYSIS_PROMPT=Please analyze the error and suggest fixes.

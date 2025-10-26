@@ -12,21 +12,21 @@ function Secondary()
     const handleLogging = async () =>
     {
       setLogStatus('Loading Secondary page...');
-      
+
       try
       {
         const undefinedObject = null;
-        const errorValue = undefinedObject.someProperty.that.does.not.exist;
-        
+        const errorValue = undefinedObject && undefinedObject.someProperty; // <--- ADDED NULL CHECK
+
         console.log('This will never execute:', errorValue);
       }
       catch (error)
       {
         const errorMessage = `Secondary Page Error: ${error.message}\nStack: ${error.stack}`;
         setLogStatus(`❌ Error occurred: ${error.message}`);
-        
+
         await logError(error);
-        
+
         const content = await readLogFile();
         if (content)
         {
@@ -64,16 +64,16 @@ function Secondary()
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff3cd', borderRadius: '5px' }}>
         <h4>⚠️ Secondary Page Status:</h4>
         <p>{logStatus}</p>
-        
+
         {logContent && (
           <div style={{ marginTop: '10px' }}>
             <h5>Log File Content:</h5>
-            <pre style={{ 
-              backgroundColor: '#f8f9fa', 
-              padding: '10px', 
-              borderRadius: '3px', 
-              fontSize: '12px', 
-              overflow: 'auto', 
+            <pre style={{
+              backgroundColor: '#f8f9fa',
+              padding: '10px',
+              borderRadius: '3px',
+              fontSize: '12px',
+              overflow: 'auto',
               maxHeight: '200px',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word'
