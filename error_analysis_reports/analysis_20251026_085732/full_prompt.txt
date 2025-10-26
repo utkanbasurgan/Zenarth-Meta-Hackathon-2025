@@ -1,0 +1,226 @@
+LOGS:
+2025-10-25T10:17:15.994Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:37:43
+handleLogging@http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:33:38
+@http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:49:18
+react_stack_bottom_frame@http://localhost:3001/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3001/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3001/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3001/static/js/bundle.js:9393:81
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10407:54
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10406:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10464:47
+recursivelyTraversePassiveMountEffects@http://localhost:3001/static/js/bundle.js:10390:32
+commitPassiveMountOnFiber@http://localhost:3001/static/js/bundle.js:10417:47
+flushPassiveEffects@http://localhost:3001/static/js/bundle.js:11660:32
+@http://localhost:3001/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3001/static/js/bundle.js:29408:54
+2025-10-25T10:17:16.000Z - ERROR: null is not an object (evaluating 'undefinedObject.someProperty') - @http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:37:43
+handleLogging@http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:33:38
+@http://localhost:3001/main.a412af7e27a1640eb0ce.hot-update.js:49:18
+react_stack_bottom_frame@http://localhost:3001/static/js/bundle.js:16065:24
+runWithFiberInDEV@http://localhost:3001/static/js/bundle.js:3352:133
+commitHookEffectListMount@http://localhost:3001/static/js/bundle.js:9356:174
+commitHookPassiveMountEffects@http://localhost:3001/static/js/bundle.js:9393:81
+reconnectPassiveEffects@http://localhost:3001/static/js/bundle.js:10497:38
+doubleInvokeEffectsOnFiber@http://localhost:3001/static/js/bundle.js:11779:150
+runWithFiberInDEV@http://localhost:3001/static/js/bundle.js:3352:133
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:89
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+recursivelyTraverseAndDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11772:186
+commitDoubleInvokeEffectsInDEV@http://localhost:3001/static/js/bundle.js:11787:51
+flushPassiveEffects@http://localhost:3001/static/js/bundle.js:11661:37
+@http://localhost:3001/static/js/bundle.js:11393:28
+performWorkUntilDeadline@http://localhost:3001/static/js/bundle.js:29408:54
+
+CODES:
+>>> src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Home from './components/Home';
+import Secondary from './components/Secondary';
+
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <nav style={{
+          backgroundColor: '#f8f9fa',
+          padding: '10px 20px',
+          borderBottom: '1px solid #dee2e6',
+          marginBottom: '20px'
+        }}>
+          <h2 style={{ margin: 0, color: '#495057' }}>Multi-Page App</h2>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/secondary" element={<Secondary />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+
+>>> src/components/Home.js
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+function Home() {
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>🏠 Home Page</h1>
+      <p>This is the working home page. Everything functions normally here.</p>
+
+      <div style={{ marginTop: '20px' }}>
+        <h3>Navigation:</h3>
+        <Link
+          to="/secondary"
+          style={{
+            display: 'inline-block',
+            padding: '10px 20px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '5px',
+            marginRight: '10px'
+          }}
+        >
+          Go to Secondary Page
+        </Link>
+      </div>
+
+      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e8f5e8', borderRadius: '5px' }}>
+        <h4>✅ Home Page Status:</h4>
+        <p>This page works perfectly! No errors here.</p>
+      </div>
+    </div>
+  );
+}
+
+export default Home;
+
+>>> src/components/Secondary.js
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { writeDenemeToLog, readLogFile, logError } from '../logService';
+
+function Secondary()
+{
+  const [logStatus, setLogStatus] = useState('Initializing...');
+  const [logContent, setLogContent] = useState('');
+
+  useEffect(() =>
+  {
+    const handleLogging = async () =>
+    {
+      setLogStatus('Loading Secondary page...');
+
+      try
+      {
+        const undefinedObject = null;
+<<<<<<< HEAD
+        const errorValue = undefinedObject && (undefinedObject.someProperty || null);
+
+=======
+        const errorValue = undefinedObject.someProperty.that.does.not.exist;
+
+>>>>>>> parent of ee11c236 (code cleaned)
+        console.log('This will never execute:', errorValue);
+      }
+      catch (error)
+      {
+        const errorMessage = `Secondary Page Error: ${error.message}\nStack: ${error.stack}`;
+        setLogStatus(`❌ Error occurred: ${error.message}`);
+
+        await logError(error);
+
+        const content = await readLogFile();
+        if (content)
+        {
+          setLogContent(content);
+        }
+      }
+    };
+
+    handleLogging();
+  }, []);
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>⚠️ Secondary Page</h1>
+      <p>This page contains the error that gets logged to the file.</p>
+
+      <div style={{ marginTop: '20px' }}>
+        <h3>Navigation:</h3>
+        <Link
+          to="/"
+          style={{
+            display: 'inline-block',
+            padding: '10px 20px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '5px',
+            marginRight: '10px'
+          }}
+        >
+          Back to Home
+        </Link>
+      </div>
+
+      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff3cd', borderRadius: '5px' }}>
+        <h4>⚠️ Secondary Page Status:</h4>
+        <p>{logStatus}</p>
+
+        {logContent && (
+          <div style={{ marginTop: '10px' }}>
+            <h5>Log File Content:</h5>
+            <pre style={{
+              backgroundColor: '#f8f9fa',
+              padding: '10px',
+              borderRadius: '3px',
+              fontSize: '12px',
+              overflow: 'auto',
+              maxHeight: '200px',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word'
+            }}>
+              {logContent}
+            </pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Secondary;

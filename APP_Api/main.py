@@ -6,22 +6,6 @@ import sys
 import re
 from pathlib import Path
 from typing import Optional
-<<<<<<< HEAD
-from datetime import datetime
-
-from python_api import connect_ssh, Config
-from llama_error_analysis import analyze_errors_with_llama
-from find_func import collect_context
-from apply_code_changes import apply_code_overwrite
-
-
-TARGET = "style"
-if not "TARGET" in globals():
-    raise ValueError(
-        "TARGET değişkeni tanımlanmamış. Bu değişken ana fonksiyon adını içermeli."
-    )
-=======
->>>>>>> parent of ee11c236 (code cleaned)
 
 # --- Proje kökü ve APP_Api yolunu tespit et ---
 APP_API_DIR = Path(__file__).resolve().parent
@@ -72,15 +56,6 @@ def find_latest_analysis_dir(root_dir: str | Path) -> Path | None:
 
 
 def run_pipeline(
-<<<<<<< HEAD
-    do_collect: bool = True,
-    do_analyze: bool = True,
-    do_apply: bool = False,
-    dry_run: bool = False,
-    window: int = 0,
-    use_overwrite: bool = True,
-    target_func="",
-=======
     project_root: Path,
     target_symbol: str,
     log_path: Path,
@@ -103,24 +78,16 @@ def run_pipeline(
     dry_run: bool,
     window: int,
     use_overwrite: bool,  # 👈 eklendi
->>>>>>> parent of ee11c236 (code cleaned)
 ) -> None:
     print("=== Llama Error Analysis • Orchestrator ===")
 
     # 1) Topla
     if do_collect:
-<<<<<<< HEAD
-        print(f"[1/3] Collect → {project_root}  target={target_func}")
-        exts = (".js", ".jsx", ".ts", ".tsx")  # Temel dosya türleri
-        count = collect_context(project_root, target_func, codes_out, exts=exts)
-        print(f"    ✓ {count} dosya → {codes_out}")
-=======
         print(f"[1/3] Collect → {project_root}  target={target_symbol}")
         count = collect_context(
             project_root, target_symbol, codes_out_path, exts=DEFAULT_EXTS
         )
         print(f"    ✓ {count} dosya → {codes_out_path}")
->>>>>>> parent of ee11c236 (code cleaned)
 
     # 2) Analiz
     if do_analyze:
@@ -210,34 +177,9 @@ def run_pipeline(
     print("\n[✓] Done.")
 
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-    # TARGET değişkeni oluşturulmuş olmalı
-    if "TARGET" not in globals():
-        raise ValueError(
-            "Lütfen TARGET değişkenini tanımlayın. Örnek: TARGET = 'LogService.secondary'"
-        )
-
-    # Konfigürasyon kontrol
-    if not hasattr(Config, "_instance"):
-        raise ValueError(
-            "Config sınıfı başlatılmamış. model_config.txt dosyasını kontrol edin."
-        )
-
-    # Pipeline çalıştır
-    run_pipeline(
-        do_collect=True,  # Kod toplama fazı
-        do_analyze=True,  # LLM analiz fazı
-        do_apply=True,  # Kod değişikliği uygulama fazı
-        dry_run=False,  # Değişiklikleri önizleme (apply fazında)
-        window=0,  # Kaç satır context kullanılacak (apply fazında)
-        use_overwrite=True,  # Tam dosya güncelleme modu kullan (apply fazında)
-        target_func="handleLogging",
-=======
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(
         description="Collect → Analyze → Apply runner (paths adapted to your tree)"
->>>>>>> parent of ee11c236 (code cleaned)
     )
     # Yol varsayılanları ağaç yapına göre
     ap.add_argument("--project", default=str(REPO_ROOT / "TESTS_Main" / "myapp"))
