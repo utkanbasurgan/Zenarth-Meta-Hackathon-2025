@@ -8,7 +8,7 @@ if [ ! -d "venv" ]; then
     echo "Creating Python virtual environment in APP_Main..."
     python3 -m venv venv
 fi
-s
+ss
 # Ensure APP_Api has its virtual environment with dependencies
 if [ ! -d "$API_DIR/venv" ]; then
     echo "Creating Python virtual environment in APP_Api..."
