@@ -2,7 +2,6 @@
 import time
 import subprocess
 import os
-ssss
 
 def write_log(log_file, message):
     with open(log_file, 'a') as f:
