@@ -2,7 +2,7 @@
 """
 Simple continuous runner that prints "Deneme" every 10 seconds.
 """
-ss
+sss
 import time
 
 def continuous_runner():
