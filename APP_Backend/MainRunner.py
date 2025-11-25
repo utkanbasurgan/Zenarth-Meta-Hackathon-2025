@@ -7,7 +7,7 @@ def write_log(log_file, message):
     with open(log_file, 'a') as f:
         f.write(message)
         f.flush()
-s
+
 
 def run_api_script(log_file, api_dir):
     write_log(log_file, f"Running main_api.py at {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
